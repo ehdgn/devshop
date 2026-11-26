@@ -2,8 +2,9 @@ package org.example.shopping.chat;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.example.shopping.chatRoom.ChatRoomGuard;
 import org.example.shopping.users.User;
-import org.example.shopping.users.enums.RoleType;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
@@ -14,10 +15,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class ChatController {
     private final ChatService chatService;
+    private final ChatRoomGuard chatRoomGuard;
 
 
     // 내 채팅방 조회
@@ -55,13 +58,19 @@ public class ChatController {
     @MessageMapping("/chat/message")
     public void receiveMessage(Map<String, Object> payload, SimpMessageHeaderAccessor accessor) {
 
-        User sessionUser = (User) accessor.getSessionAttributes().get("sessionUser");
+        Map<String, Object> attrs = accessor.getSessionAttributes();
+        User sessionUser = attrs == null ? null : (User) attrs.get("sessionUser");
 
-        String message = (String) payload.get("message");
-        Long chatRoomId = ((Number) payload.get("chatRoomId")).longValue();
+        Object message = payload.get("message");
+        Long chatRoomId = payload.get("chatRoomId") instanceof Number n ? n.longValue() : null;
 
-        SenderRole sender = sessionUser.getRole().getRole().equals(RoleType.ADMIN) ? SenderRole.ADMIN : SenderRole.OWNER;
-        chatService.saveAndBroadcast(message, chatRoomId, sender);
+        if (!(message instanceof String text) || text.isBlank() || !chatRoomGuard.canAccess(sessionUser, chatRoomId)) {
+            log.warn("채팅 메시지 거부 chatRoomId={} userId={}", chatRoomId, sessionUser == null ? null : sessionUser.getId());
+            return;
+        }
+
+        SenderRole sender = sessionUser.isAdmin() ? SenderRole.ADMIN : SenderRole.OWNER;
+        chatService.saveAndBroadcast(text, chatRoomId, sender);
     }
 
 }
