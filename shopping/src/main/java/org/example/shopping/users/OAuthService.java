@@ -23,9 +23,7 @@ public class OAuthService {
 
         UserResponse.KakaoProfile kakaoProfile = kakaoOAuthClient.getUserProfile(accessToken);
 
-        String username = kakaoProfile.getProperties().getNickname() + "_" + kakaoProfile.getId();
-
-        User user = userService.findOrCreateKakaoUser(username, kakaoProfile);
+        User user = userService.findOrCreateKakaoUser(kakaoProfile);
 
         if(cartRepository.findByUserId(user.getId()).isEmpty()){
             cartService.createCart(user);

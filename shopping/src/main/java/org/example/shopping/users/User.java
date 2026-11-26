@@ -56,8 +56,13 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false) @ColumnDefault("'LOCAL'")
     private OAuthProvider provider;
 
+    // 소셜 로그인 계정의 고유 ID (카카오 회원번호). 소셜 회원은 username 이 아니라 이 값으로 찾는다
+    @Column(unique = true)
+    private String providerId;
+
     @Builder
-    public User(Long id, String username, String password, String nickname, String  email, Address address, String phoneNumber, Gender gender, LocalDate birthday, OAuthProvider provider) {
+    public User(Long id, String username, String password, String nickname, String  email, Address address, String phoneNumber, Gender gender, LocalDate birthday, OAuthProvider provider, String providerId) {
+        this.providerId = providerId;
         this.id = id;
         this.username = username;
         this.password = password;
