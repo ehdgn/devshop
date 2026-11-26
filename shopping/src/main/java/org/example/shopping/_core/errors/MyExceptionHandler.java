@@ -8,56 +8,43 @@ import org.example.shopping._core.errors.exception.Exception403;
 import org.example.shopping._core.errors.exception.Exception404;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.ModelAndView;
 
-import java.util.HashMap;
 import java.util.Map;
 
 
+// 오류는 항상 실제 HTTP 상태코드로 응답한다: fetch 는 response.ok 로 성공 여부를 판단하기 때문
+// Accept: application/json 요청에는 {"message": ...} JSON, 그 외에는 alert 페이지
 @ControllerAdvice
 @Slf4j
 public class MyExceptionHandler {
 
     @ExceptionHandler(Exception400.class)
-    public Object ex400(Exception400 e, Model model, HttpServletRequest request) {
-        String message = e.getMessage();
-
-        String accept = request.getHeader("Accept");
-        if (accept != null && accept.contains("application/json")) {
-            log.debug("API 요청 에러 발생: {}", e.getMessage());
-            Map<String , String> response = new HashMap<>();
-            response.put("message", e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        }
-
-        model.addAttribute("alertMessage", e.getMessage());
-        return "alert";
+    public Object ex400(Exception400 e, HttpServletRequest request) {
+        return respond(request, HttpStatus.BAD_REQUEST, e.getMessage(), null);
     }
 
     @ExceptionHandler(Exception401.class)
-    public String ex401(Exception401 e, Model model) {
-        model.addAttribute("alertMessage", e.getMessage());
-        model.addAttribute("url", "/user/login"); // 로그인 폼으로 유도
-        return "alert";
+    public Object ex401(Exception401 e, HttpServletRequest request) {
+        return respond(request, HttpStatus.UNAUTHORIZED, e.getMessage(), "/user/login"); // 로그인 폼으로 유도
     }
 
     @ExceptionHandler(Exception403.class)
-    public String ex403(Exception403 e, Model model) {
-        model.addAttribute("alertMessage", e.getMessage());
-        return "alert"; // history.back()
+    public Object ex403(Exception403 e, HttpServletRequest request) {
+        return respond(request, HttpStatus.FORBIDDEN, e.getMessage(), null);
     }
 
     @ExceptionHandler(Exception404.class)
-    public String ex404(Exception404 e, Model model) {
-        model.addAttribute("alertMessage", e.getMessage());
-        return "alert";
+    public Object ex404(Exception404 e, HttpServletRequest request) {
+        return respond(request, HttpStatus.NOT_FOUND, e.getMessage(), null);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public String handleDataViolationException(DataIntegrityViolationException e, Model model) {
+    public Object handleDataViolationException(DataIntegrityViolationException e, HttpServletRequest request) {
         String errorMessage = e.getMessage();
         String displayMsg = "데이터베이스 오류가 발생했습니다.";
 
@@ -65,14 +52,29 @@ public class MyExceptionHandler {
             displayMsg = "관련된 데이터가 존재하여 삭제하거나 수정할 수 없습니다.";
         }
 
-        model.addAttribute("alertMessage", displayMsg);
-        return "alert";
+        return respond(request, HttpStatus.CONFLICT, displayMsg, null);
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public String handleRuntimeException(RuntimeException e, Model model) {
-        log.error("예상치 못한 에러: {}", e.getMessage());
-        model.addAttribute("alertMessage", "서버 내부 오류가 발생했습니다: " + e.getMessage());
-        return "alert";
+    public Object handleRuntimeException(RuntimeException e, HttpServletRequest request) {
+        log.error("예상치 못한 에러: {}", e.getMessage(), e);
+        return respond(request, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다: " + e.getMessage(), null);
+    }
+
+    private Object respond(HttpServletRequest request, HttpStatus status, String message, String url) {
+        String accept = request.getHeader("Accept");
+        if (accept != null && accept.contains("application/json")) {
+            return ResponseEntity.status(status)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(Map.of("message", message == null ? "" : message));
+        }
+
+        ModelAndView mav = new ModelAndView("alert");
+        mav.addObject("alertMessage", message);
+        if (url != null) {
+            mav.addObject("url", url);
+        }
+        mav.setStatus(status);
+        return mav;
     }
 }
