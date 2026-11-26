@@ -3,6 +3,7 @@ package org.example.shopping.product;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.shopping._core.errors.exception.Exception400;
+import org.example.shopping._core.errors.exception.Exception403;
 import org.example.shopping._core.errors.exception.Exception404;
 import org.example.shopping._core.errors.exception.Exception500;
 import org.example.shopping._core.utils.FileUtil;
@@ -98,13 +99,12 @@ public class ProductService {
 
     // 수정
     @Transactional
-    public void updateById(Long id, ProductRequest.UpdateDTO dto, MultipartFile thumbnail) {
+    public void updateById(Long id, Long userId, ProductRequest.UpdateDTO dto, MultipartFile thumbnail) {
         log.info("=== 상품 수정 시작 ===");
         log.info("상품 ID: {}", id);
         log.info("DTO: {}", dto);
 
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new Exception404("상품을 찾을 수 없습니다"));
+        Product product = getOwnedProduct(id, userId);
 
         log.info("수정 전 상품명: {}", product.getProductName());
         log.info("수정 전 가격: {}", product.getPrice());
@@ -160,19 +160,23 @@ public class ProductService {
 
     // 삭제
     @Transactional
-    public void deleteById(Long id) {
-
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new Exception404("상품을 찾을 수 없습니다"));
-
+    public void deleteById(Long id, Long userId) {
+        Product product = getOwnedProduct(id, userId);
         productRepository.delete(product);
     }
 
-    public ProductResponse.UpdateFormDTO findByIdForUpdate(Long id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new Exception404("상품을 찾을수 없습니다."));
+    public ProductResponse.UpdateFormDTO findByIdForUpdate(Long id, Long userId) {
+        return new ProductResponse.UpdateFormDTO(getOwnedProduct(id, userId));
+    }
 
-        return new ProductResponse.UpdateFormDTO(product);
+    // 판매자는 자기 상품만 수정·삭제할 수 있다
+    private Product getOwnedProduct(Long id, Long userId) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new Exception404("상품을 찾을 수 없습니다"));
+        if (!product.isOwner(userId)) {
+            throw new Exception403("본인이 등록한 상품만 수정·삭제할 수 있습니다.");
+        }
+        return product;
     }
 
 

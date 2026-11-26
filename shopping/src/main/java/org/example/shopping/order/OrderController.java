@@ -34,7 +34,7 @@ public class OrderController {
     public String detail(Model model, HttpSession session, Long orderId) {
         User sessionUser = (User) session.getAttribute("sessionUser");
 
-        OrderResponse.OrderDetailDTO order = orderService.orderDetail(orderId);
+        OrderResponse.OrderDetailDTO order = orderService.orderDetail(orderId, sessionUser.getId());
 
         model.addAttribute("order", order);
 

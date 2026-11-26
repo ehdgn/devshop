@@ -96,11 +96,13 @@ public class PaymentService {
     }
 
     // ===================== 결제 후 수량 증가 감소 메서드 =====================
-    @Transactional
-    public void decreaseQuantity(Long productId, Integer quantity) {
-        Product product = productRepository.findById(productId).orElseThrow(() -> new Exception404("NOT FOUND"));
-        product.decreaseQuantity(quantity);
-        productRepository.save(product);
+    private void reserveStock(List<CartItem> items) {
+        for (CartItem item : items) {
+            Product product = item.getProduct();
+            if (productRepository.decreaseStock(product.getId(), item.getQuantity()) == 0) {
+                throw new Exception400("재고가 부족합니다: " + product.getProductName());
+            }
+        }
     }
 
     // ===================== 환불 후 수량 증가 감소 메서드 =====================
@@ -120,6 +122,7 @@ public class PaymentService {
             throw new BusinessException(ErrorCode.INVALID_INPUT, "TossPay는 approvePayment 메서드를 사용하세요");
         }
         List<CartItem> checkItem = getChecked(cartId, user.getId());
+        reserveStock(checkItem);
         placeOrder(user, checkItem, PaymentMethod.MOCK, "ORD-" + UUID.randomUUID(), "MOCK-" + UUID.randomUUID());
     }
 
@@ -131,6 +134,8 @@ public class PaymentService {
         if (createDTO.getAmount() == null || createDTO.getAmount() != totalOf(checkItem)) {
             throw new Exception400("결제 금액이 주문 금액과 일치하지 않습니다.");
         }
+        // 재고를 먼저 확보한다: 승인 후에 재고가 부족하면 돈만 빠져나가기 때문 (승인 실패 시 롤백으로 복구)
+        reserveStock(checkItem);
         PaymentGateway gateway = gatewayResolver.resolve(createDTO.getMethod());
         PaymentResult paymentResult = gateway.approve(createDTO);
         if (!paymentResult.isSuccess()) {
@@ -159,7 +164,6 @@ public class PaymentService {
         Order order = orderService.createOrder(user.getId());
         for (CartItem cartItem : checkItem) {
             order.addItem(new OrderItem(order, cartItem.getProduct(), cartItem.getQuantity()));
-            decreaseQuantity(cartItem.getProduct().getId(), cartItem.getQuantity());
         }
 
         Payment payment = Payment.builder()

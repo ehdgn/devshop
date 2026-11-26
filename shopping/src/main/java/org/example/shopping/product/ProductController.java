@@ -119,8 +119,8 @@ public class ProductController {
 
     @GetMapping("/owner/products/{id}/edit")
     public String editForm(@PathVariable Long id, Model model, HttpSession session) {
-        getOwnerUser(session);
-        ProductResponse.UpdateFormDTO product = productService.findByIdForUpdate(id);
+        User sessionUser = getOwnerUser(session);
+        ProductResponse.UpdateFormDTO product = productService.findByIdForUpdate(id, sessionUser.getId());
         List<CategoryResponse.ListDTO> categoryList = categoryService.findAll();
         model.addAttribute("product", product);
         model.addAttribute("category", categoryList);
@@ -135,16 +135,16 @@ public class ProductController {
             HttpSession session,
             RedirectAttributes redirectAttributes
     ) {
-        getOwnerUser(session);
-        productService.updateById(id, dto, thumbnail);
+        User sessionUser = getOwnerUser(session);
+        productService.updateById(id, sessionUser.getId(), dto, thumbnail);
         redirectAttributes.addFlashAttribute("message", "상품이 성공적으로 수정되었습니다.");
         return "redirect:/owner/products/" + id;
     }
 
     @PostMapping("/owner/products/{id}/delete")
     public String delete(@PathVariable Long id, HttpSession session, RedirectAttributes redirectAttributes) {
-        getOwnerUser(session);
-        productService.deleteById(id);
+        User sessionUser = getOwnerUser(session);
+        productService.deleteById(id, sessionUser.getId());
         redirectAttributes.addFlashAttribute("message", "상품이 삭제되었습니다.");
         return "redirect:/owner/products";
     }

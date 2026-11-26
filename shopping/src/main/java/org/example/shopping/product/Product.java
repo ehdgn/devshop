@@ -92,12 +92,7 @@ public class Product {
         }
     }
 
-    // 결제 후 수량 감소
-    public void decreaseQuantity(int quantity) {
-        this.stockQuantity -= quantity;
-        this.minusQuantity += quantity;
-    }
-    // 환불 후 수량 증가
+    // 환불 후 수량 증가 (결제 시 감소는 ProductRepository.decreaseStock)
     public void increaseQuantity(int quantity) {
         this.stockQuantity += quantity;
         this.minusQuantity -= quantity;
