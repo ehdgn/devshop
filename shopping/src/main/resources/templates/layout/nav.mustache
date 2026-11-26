@@ -1,14 +1,4 @@
-<div class="nav-container d-flex align-items-center border-top">
+<nav class="category-bar" aria-label="카테고리">
+    <a href="/" class="category-home">홈</a>
     {{> category/category-nav }}
-
-    <div class="user-menu ms-auto">
-        {{#sessionUser}}
-            {{#isAdmin}}
-                <a href="/admin/main" class="admin-link">관리자 페이지</a>
-            {{/isAdmin}}
-            {{#isOwner}}
-                <a href="/owner/dashboard" class="owner-link">판매자 페이지</a>
-            {{/isOwner}}
-        {{/sessionUser}}
-    </div>
-</div>
+</nav>

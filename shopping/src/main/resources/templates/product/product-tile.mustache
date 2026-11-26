@@ -1,0 +1,11 @@
+<a href="/products/{{id}}" class="product-tile">
+    <div class="tile-image">
+        {{#thumbnailUrl}}<img src="{{thumbnailUrl}}" alt="{{name}}" loading="lazy">{{/thumbnailUrl}}
+        {{^thumbnailUrl}}<img src="/img/no-image.png" alt="이미지 없음">{{/thumbnailUrl}}
+    </div>
+    <div class="tile-info">
+        <p class="tile-seller">{{ownerName}}</p>
+        <p class="tile-name">{{name}}</p>
+        <p class="tile-price"><strong>{{price}}원</strong></p>
+    </div>
+</a>

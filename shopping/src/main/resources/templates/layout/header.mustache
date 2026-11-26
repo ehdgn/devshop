@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <title>DEVSHOP | 개발자 필수템</title>
     <meta charset="utf-8"/>
@@ -33,44 +33,46 @@
     <link rel="stylesheet" href="/css/user/admin-product-list.css">
     <link rel="stylesheet" href="/css/review/review-update.css">
 
-<!-- 여기에 css 파일 만든것 붙일 것임! (각 도메인 폴더안에 생성하기!) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+    <!-- 공통 테마: 반드시 마지막에 불러와 위 스타일을 덮어쓴다 -->
+    <link rel="stylesheet" href="/css/theme.css">
 </head>
 <body>
 
-<header class="header-wrapper has-nav">
-    <div class="container">
-        <div class="first-top d-flex justify-content-end gap-3 py-2">
-            <a href="#" class="text-secondary small">고객센터</a>
+<header class="site-header">
+    <div class="site-container">
+        <nav class="util-bar" aria-label="이용 메뉴">
+            <a href="#">고객센터</a>
             {{#sessionUser}}
-                <a href="/user/logout" class="text-secondary small">로그아웃</a>
+                {{#isAdmin}}<a href="/admin/main">관리자 페이지</a>{{/isAdmin}}
+                {{#isOwner}}<a href="/owner/dashboard">판매자 페이지</a>{{/isOwner}}
+                {{^isAdmin}}<a href="/order/list">마이페이지</a>{{/isAdmin}}
+                <a href="/user/logout">로그아웃</a>
             {{/sessionUser}}
             {{^sessionUser}}
-                <a href="/user/login" class="text-secondary small">로그인</a>
+                <a href="/user/join">회원가입</a>
+                <a href="/user/login">로그인</a>
             {{/sessionUser}}
-        </div>
+        </nav>
 
-        <div class="second-top d-flex justify-content-between align-items-center py-3">
-            <a href="/">
-                <img src="/img/logo.png" width="180px" alt="logo"/>
+        <div class="brand-bar">
+            <a href="/" class="brand-logo" aria-label="DEVSHOP 홈">
+                <img src="/img/logo.png" alt="DEVSHOP"/>
             </a>
-            <div class="d-flex align-items-center gap-3">
-                <div class="greet small">
-                    {{#sessionUser}}
-                        <strong>{{sessionUser.nickname}}</strong>님, 안녕하세요!
-                        <span class="badge bg-secondary">{{roleDisplay}}</span>
-                    {{/sessionUser}}
-                    {{^sessionUser}}DEV SHOP 입니다{{/sessionUser}}
-                </div>
+            <div class="brand-actions">
                 {{#sessionUser}}
-                    <a href="/user/update"><i class="bi bi-person-fill fs-4"></i></a>
+                    <span class="greet"><strong>{{sessionUser.nickname}}</strong>님</span>
+                    <a href="/user/update" class="icon-link" aria-label="내 정보"><i class="bi bi-person"></i></a>
                     {{^isAdmin}}
-                        <a href="/cart/list"><i class="bi bi-cart fs-4"></i></a>
+                        <a href="/cart/list" class="icon-link" aria-label="장바구니"><i class="bi bi-bag"></i></a>
                     {{/isAdmin}}
+                {{/sessionUser}}
+                {{^sessionUser}}
+                    <a href="/user/login" class="icon-link" aria-label="로그인"><i class="bi bi-person"></i></a>
                 {{/sessionUser}}
             </div>
         </div>
 
         {{> layout/nav }}
-
     </div>
 </header>

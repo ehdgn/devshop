@@ -1,40 +1,32 @@
+{{> layout/header }}
 
-        {{> layout/header }}
-
-
-<main class="container my-4">
-    <!-- Carousel -->
-    <div id="demo" class="carousel slide rounded-4 overflow-hidden shadow-sm" data-bs-ride="carousel">
-        <div class="carousel-indicators">
-            <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
-            <button type="button" data-bs-target="#demo" data-bs-slide-to="1"></button>
-            <button type="button" data-bs-target="#demo" data-bs-slide-to="2"></button>
-        </div>
+<main>
+    <section class="hero carousel slide" id="hero" data-bs-ride="carousel" aria-label="기획전">
         <div class="carousel-inner">
-            <div class="carousel-item active"><img src="/img/banner1.png" class="d-block w-100" alt="..."></div>
-            <div class="carousel-item"><img src="/img/banner2.jpg" class="d-block w-100" alt="..."></div>
-            <div class="carousel-item"><img src="/img/banner3.jpg" class="d-block w-100" alt="..."></div>
+            <div class="carousel-item active"><img src="/img/banner1.png" alt="기획전 배너 1"></div>
+            <div class="carousel-item"><img src="/img/banner2.jpg" alt="기획전 배너 2"></div>
+            <div class="carousel-item"><img src="/img/banner3.jpg" alt="기획전 배너 3"></div>
         </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
-            <span class="carousel-control-next-icon"></span>
-        </button>
-    </div>
-    <div class="row row-cols-2 row-cols-md-4 g-4 mt-4">
-{{#category}}
-        <div class="col">
-            <a href="/category/{{id}}" class="card h-100 border-0 text-center">
-                <img class="card-img-top rounded-3" src="{{imageUrl}}" alt="keybaord">
-                <div class="card-body">{{categoryName}}</div>
-            </a>
+        <div class="hero-dots carousel-indicators">
+            <button type="button" data-bs-target="#hero" data-bs-slide-to="0" class="active" aria-label="배너 1"></button>
+            <button type="button" data-bs-target="#hero" data-bs-slide-to="1" aria-label="배너 2"></button>
+            <button type="button" data-bs-target="#hero" data-bs-slide-to="2" aria-label="배너 3"></button>
         </div>
-{{/category}}
+    </section>
 
+    <div class="site-container">
+        <nav class="shortcut-row" aria-label="카테고리 바로가기">
+            {{#category}}
+                <a href="/category/{{id}}" class="shortcut">
+                    <span class="shortcut-image">
+                        {{#imageUrl}}<img src="{{imageUrl}}" alt="">{{/imageUrl}}
+                    </span>
+                    <span class="shortcut-label">{{categoryName}}</span>
+                </a>
+            {{/category}}
+        </nav>
 
+        {{> product/card }}
     </div>
-    {{> product/card }}
-</main>
 
 {{> layout/footer }}
