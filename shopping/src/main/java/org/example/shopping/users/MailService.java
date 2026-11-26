@@ -10,6 +10,7 @@ import org.example.shopping._core.errors.exception.Exception500;
 import org.example.shopping._core.utils.MailUtils;
 import org.example.shopping.order.Order;
 import org.example.shopping.order.OrderRepository;
+import org.example.shopping.orderItem.OrderItem;
 import org.example.shopping.payment.Payment;
 import org.example.shopping.payment.PaymentRepository;
 import org.example.shopping.users.user.UserRepository;
@@ -68,7 +69,8 @@ public class MailService {
 
     public void sendPayInfo(User user,Long orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new Exception404("없음"));
-        List<Payment> payments = order.getPayments();
+        List<OrderItem> items = order.getOrderItems();
+        Payment payment = order.getPayment();
         MimeMessage message  = javaMailSender.createMimeMessage();
 
         try {
@@ -81,20 +83,18 @@ public class MailService {
             emailBody.append("<table border='1' style='border-collapse: collapse; width: 100%;'>");
             emailBody.append("<tr><th>상품명</th><th>수량</th><th>금액</th><th>주문번호</th></tr>");
 
-            Long totalAmount = 0L;
-            for (Payment payment : payments) {
+            for (OrderItem item : items) {
                 emailBody.append("<tr>");
-                emailBody.append("<td>").append(payment.getProductName()).append("</td>");
-                emailBody.append("<td>").append(payment.getQuantity()).append("</td>");
-                emailBody.append("<td>").append(payment.getAmount()).append("원</td>");
-                emailBody.append("<td>").append(payment.getOrderId()).append("</td>");
+                emailBody.append("<td>").append(item.getProductName()).append("</td>");
+                emailBody.append("<td>").append(item.getQuantity()).append("</td>");
+                emailBody.append("<td>").append(item.getAmount()).append("원</td>");
+                emailBody.append("<td>").append(order.getOrderNumber()).append("</td>");
                 emailBody.append("</tr>");
-                totalAmount += payment.getAmount();
             }
 
             emailBody.append("</table>");
-            emailBody.append("<h3>총 결제 금액: ").append(totalAmount).append("원</h3>");
-            emailBody.append("<p>결제 방법: ").append(payments.get(0).getMethod()).append("</p>");
+            emailBody.append("<h3>총 결제 금액: ").append(payment.getAmount()).append("원</h3>");
+            emailBody.append("<p>결제 방법: ").append(payment.getMethod()).append("</p>");
             emailBody.append("<p>주문 번호: ").append(order.getId()).append("</p>");
 
             helper.setText(emailBody.toString(), true);

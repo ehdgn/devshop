@@ -6,12 +6,15 @@ package org.example.shopping.payment.paymentEnum;
  *
  *      READY => (PG 승인 성공) => SUCCESS
  *      READY => (PG 승인 실패) => FAILED
- *      SUCCESS => (환불 처리 완료) => REFUNDED
+ *      SUCCESS => (일부 상품 환불) => PARTIAL_REFUNDED
+ *      SUCCESS / PARTIAL_REFUNDED => (남은 금액까지 환불) => REFUNDED
+ *
+ *      구매확정은 상품 단위라 OrderItemStatus 에서 관리
  *
  * */
 public enum PaymentStatus {
     SUCCESS,
     FAILED,
-    CONFIRMED,
+    PARTIAL_REFUNDED,
     REFUNDED
 }

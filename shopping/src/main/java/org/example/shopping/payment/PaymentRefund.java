@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.example.shopping._core.utils.BaseTimeEntity;
+import org.example.shopping.orderItem.OrderItem;
 import org.example.shopping.payment.paymentEnum.RefundStatus;
 import org.example.shopping.users.User;
 
@@ -30,6 +31,11 @@ public class PaymentRefund extends BaseTimeEntity {
     @JoinColumn(name = "payment_id")
     private Payment payment;
 
+    // 환불 대상 상품 (돈은 payment 에서 나감)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_item_id")
+    private OrderItem orderItem;
+
     private Long amount;
 
     private String reason;
@@ -44,9 +50,10 @@ public class PaymentRefund extends BaseTimeEntity {
     private LocalDateTime completedAt;
 
     @Builder
-    public PaymentRefund(User user, Payment payment, Long amount, String reason, RefundStatus status, String failureCode, String failureMessage, LocalDateTime requestedAt, LocalDateTime completedAt) {
+    public PaymentRefund(User user, Payment payment, OrderItem orderItem, Long amount, String reason, RefundStatus status, String failureCode, String failureMessage, LocalDateTime requestedAt, LocalDateTime completedAt) {
         this.user = user;
         this.payment = payment;
+        this.orderItem = orderItem;
         this.amount = amount;
         this.reason = reason;
         this.status = status;

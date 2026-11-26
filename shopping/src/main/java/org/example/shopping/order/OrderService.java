@@ -34,7 +34,7 @@ public class OrderService {
     public List<OrderResponse.OrderListDTO> orderList(Long userId, String keyword) {
 
         if (keyword != null && !keyword.trim().isEmpty()) {
-            List<Order> orderList = orderRepository.findByKeyword(keyword.trim());
+            List<Order> orderList = orderRepository.findByKeyword(userId, keyword.trim());
             return orderList.stream()
                     .map(OrderResponse.OrderListDTO::new)
                     .toList();
