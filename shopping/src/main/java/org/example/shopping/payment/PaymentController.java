@@ -29,7 +29,7 @@ public class PaymentController {
     ) {
         User sessionUser = (User) session.getAttribute("sessionUser");
         if (cartId != null) {
-            PaymentResponse.CartPaymentDTO cartPayment = paymentService.getCartInfo(cartId);
+            PaymentResponse.CartPaymentDTO cartPayment = paymentService.getCartInfo(cartId, sessionUser.getId());
             model.addAttribute("cartPayment", cartPayment);
             model.addAttribute("cartId", cartId);
         }
@@ -98,7 +98,7 @@ public class PaymentController {
     public ResponseEntity<Void> confirmPurchase(@PathVariable(name = "id") Long paymentId,
                                              HttpSession session) {
         User sessionUser = (User) session.getAttribute("sessionUser");
-        paymentService.confirmPurchase(paymentId);
+        paymentService.confirmPurchase(paymentId, sessionUser.getId());
         return ResponseEntity.ok().build();
     }
 

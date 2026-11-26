@@ -101,7 +101,8 @@ public class MailService {
             javaMailSender.send(message);
 
         } catch (Exception e) {
-            throw new Exception500("SERVER_ERROR");
+            // 결제는 이미 승인됨: 메일 실패로 주문 기록까지 롤백되면 안 됨
+            log.error("결제 안내 메일 발송 실패 orderId={}", orderId, e);
         }
     }
 }
