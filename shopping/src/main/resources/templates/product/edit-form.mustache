@@ -115,12 +115,14 @@
 <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
 <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 
+<textarea id="initialDescription" hidden>{{product.description}}</textarea>
 <script>
     const editor = new toastui.Editor({
         el: document.querySelector('#editor'),
         height: '400px',
         initialEditType: 'wysiwyg',
-        initialValue: `{{{product.description}}}`
+        // 설명을 JS 문자열에 직접 넣으면 백틱이나 ${ } 로 스크립트가 끼어들 수 있어 숨긴 textarea 에서 읽는다
+        initialValue: document.getElementById('initialDescription').value
     });
 
     document.querySelector('#editForm').addEventListener('submit', function () {
