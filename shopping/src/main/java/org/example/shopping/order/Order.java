@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.shopping.orderItem.OrderItem;
 import org.example.shopping.payment.Payment;
 import org.example.shopping.users.User;
 
@@ -26,8 +27,11 @@ public class Order {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany
-    private List<Payment> payments = new ArrayList<>();
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<OrderItem> orderItems = new ArrayList<>();
+
+    @OneToOne(mappedBy = "order")
+    private Payment payment;
 
     private LocalDateTime createdAt;
 
@@ -39,7 +43,7 @@ public class Order {
         this.createdAt = createdAt;
     }
 
-    public void addPayment(Payment payment) {
-        this.getPayments().add(payment);
+    public void addItem(OrderItem item) {
+        this.orderItems.add(item);
     }
 }

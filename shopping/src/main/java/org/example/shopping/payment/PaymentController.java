@@ -43,10 +43,9 @@ public class PaymentController {
 
     // MOCK 결제
     @PostMapping("/payment/cart/{cartId}")
-    public String createPayment(PaymentRequest.CreateDTO createDTO, HttpSession session, @PathVariable Long cartId, Model model) {
+    public String createPayment(PaymentRequest.CreateDTO createDTO, HttpSession session, @PathVariable Long cartId) {
         User sessionUser = (User) session.getAttribute("sessionUser");
-        PaymentResponse response = paymentService.createPayment(createDTO, sessionUser, cartId);
-        model.addAttribute("payment", response);
+        paymentService.createPayment(createDTO, sessionUser, cartId);
         return "redirect:/";
 
     }
@@ -83,22 +82,23 @@ public class PaymentController {
 
     //==============================================================================================================================
 
-    @PostMapping("/payment/{id}/refund")
+    // 주문 상품 단위 환불 (결제는 부분취소)
+    @PostMapping("/order/items/{id}/refund")
     @ResponseBody
-    public ResponseEntity<PaymentResponse.SingleRefundDTO> singleRefund(@PathVariable(name = "id") Long paymentId,
-                                                                        HttpSession session,
-                                                                        @RequestBody PaymentRequest.RefundDTO req) {
+    public ResponseEntity<PaymentResponse.SingleRefundDTO> refund(@PathVariable(name = "id") Long orderItemId,
+                                                                  HttpSession session,
+                                                                  @RequestBody PaymentRequest.RefundDTO req) {
         User sessionUser = (User) session.getAttribute("sessionUser");
-        PaymentResponse.SingleRefundDTO response = paymentService.singleRefund(paymentId, sessionUser.getId(), req);
+        PaymentResponse.SingleRefundDTO response = paymentService.refund(orderItemId, sessionUser.getId(), req);
         return ResponseEntity.ok().body(response);
     }
 
-    @PostMapping("/payment/{id}/confirm")
+    @PostMapping("/order/items/{id}/confirm")
     @ResponseBody
-    public ResponseEntity<Void> confirmPurchase(@PathVariable(name = "id") Long paymentId,
+    public ResponseEntity<Void> confirmPurchase(@PathVariable(name = "id") Long orderItemId,
                                              HttpSession session) {
         User sessionUser = (User) session.getAttribute("sessionUser");
-        paymentService.confirmPurchase(paymentId, sessionUser.getId());
+        paymentService.confirmPurchase(orderItemId, sessionUser.getId());
         return ResponseEntity.ok().build();
     }
 

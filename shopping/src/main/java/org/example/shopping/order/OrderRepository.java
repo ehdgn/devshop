@@ -10,14 +10,16 @@ import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-    @Query("SELECT o FROM Order o JOIN FETCH o.payments WHERE o.user.id = :userId ORDER BY o.createdAt DESC")
-    List<Order> findAllByUserIdAndOrderByCreatedAtDesc(Long userId);
+    @Query("SELECT o FROM Order o JOIN FETCH o.orderItems WHERE o.user.id = :userId ORDER BY o.createdAt DESC")
+    List<Order> findAllByUserIdAndOrderByCreatedAtDesc(@Param("userId") Long userId);
 
     Optional<Order> findByUserId(Long userId);
 
+    // 검색 결과에는 키워드와 맞는 주문 상품만 담긴다
     @Query("SELECT o FROM Order o " +
-            "JOIN FETCH o.payments p " +
-            "WHERE LOWER(p.productName) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
-            "ORDER BY p.createdAt DESC ")
-    List<Order> findByKeyword(@Param("keyword") String keyword);
+            "JOIN FETCH o.orderItems oi " +
+            "WHERE o.user.id = :userId " +
+            "AND LOWER(oi.productName) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "ORDER BY o.createdAt DESC ")
+    List<Order> findByKeyword(@Param("userId") Long userId, @Param("keyword") String keyword);
 }
