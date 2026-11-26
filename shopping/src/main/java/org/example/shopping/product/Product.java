@@ -1,5 +1,6 @@
 package org.example.shopping.product;
 
+import org.example.shopping._core.utils.HtmlSanitizer;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
@@ -62,7 +63,7 @@ public class Product {
         this.stockQuantity = stockQuantity;
         this.minusQuantity = minusQuantity;
         this.thumbnailUrl = thumbnailUrl;
-        this.description = description;
+        this.description = HtmlSanitizer.clean(description);
         this.status = status;
         this.category = category;
         this.createdAt = createdAt;
@@ -75,7 +76,7 @@ public class Product {
         this.productName = dto.getProductName();
         this.price = dto.getPrice();
         this.stockQuantity = dto.getStockQuantity();
-        this.description = dto.getDescription();
+        this.description = HtmlSanitizer.clean(dto.getDescription());
         this.category = category;
         this.status = dto.getStatus();
 
