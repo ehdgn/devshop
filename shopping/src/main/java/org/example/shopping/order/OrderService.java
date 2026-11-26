@@ -1,6 +1,8 @@
 package org.example.shopping.order;
 
 import lombok.RequiredArgsConstructor;
+import org.example.shopping._core.errors.exception.Exception400;
+import org.example.shopping._core.errors.exception.Exception403;
 import org.example.shopping._core.errors.exception.Exception404;
 import org.example.shopping._core.utils.MyDateUtil;
 import org.example.shopping.users.User;
@@ -46,9 +48,15 @@ public class OrderService {
         }
     }
 
-    public OrderResponse.OrderDetailDTO orderDetail(Long orderId) {
+    public OrderResponse.OrderDetailDTO orderDetail(Long orderId, Long userId) {
+        if (orderId == null) {
+            throw new Exception400("주문 번호가 없습니다.");
+        }
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new Exception404("주문을 찾을 수 없습니다."));
+        if (!order.getUser().getId().equals(userId)) {
+            throw new Exception403("본인의 주문만 볼 수 있습니다.");
+        }
 
         return new OrderResponse.OrderDetailDTO(order);
     }

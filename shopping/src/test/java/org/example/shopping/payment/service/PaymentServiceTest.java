@@ -141,4 +141,21 @@ class PaymentServiceTest {
         assertThrows(Exception400.class, () -> paymentService.approvePayment(owner, 7L, dto));
         verify(gatewayResolver, never()).resolve(any());
     }
+
+    @Test
+    void 재고가_부족하면_토스_승인을_요청하지_않는다() {
+        Product product = product(10_000L);
+        when(product.getId()).thenReturn(5L);
+        when(cartRepository.findById(7L)).thenReturn(Optional.of(new Cart(owner)));
+        CartItem item = CartItem.builder().product(product).quantity(2).build();
+        when(cartItemRepository.findByCartId(7L)).thenReturn(List.of(item));
+        when(productRepository.decreaseStock(5L, 2)).thenReturn(0); // 조건(재고 >= 수량)에 맞는 행 없음
+
+        PaymentRequest.CreateDTO dto = new PaymentRequest.CreateDTO();
+        dto.setMethod(PaymentMethod.TOSS_PAY);
+        dto.setAmount(20_000L);
+
+        assertThrows(Exception400.class, () -> paymentService.approvePayment(owner, 7L, dto));
+        verify(gatewayResolver, never()).resolve(any());
+    }
 }

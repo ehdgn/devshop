@@ -2,6 +2,7 @@ package org.example.shopping.product;
 
 import org.example.shopping.product.productEnum.ProductStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -9,6 +10,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
+
+    // 재고 확인과 차감을 쿼리 하나로: 동시에 결제해도 재고가 음수가 되지 않는다 (0이면 재고 부족)
+    @Modifying(flushAutomatically = true)
+    @Query("UPDATE Product p SET p.stockQuantity = p.stockQuantity - :quantity, " +
+            "p.minusQuantity = p.minusQuantity + :quantity " +
+            "WHERE p.id = :id AND p.stockQuantity >= :quantity")
+    int decreaseStock(@Param("id") Long id, @Param("quantity") int quantity);
 
 
     @Query("SELECT p FROM Product p JOIN FETCH p.owner o WHERE o.id = :id ORDER BY p.createdAt DESC")
