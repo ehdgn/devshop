@@ -2,6 +2,7 @@ package org.example.shopping.payment.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.shopping._core.errors.exception.Exception400;
+import org.example.shopping._core.errors.exception.Exception403;
 import org.example.shopping._core.errors.exception.Exception404;
 import org.example.shopping.cart.Cart;
 import org.example.shopping.cart.CartRepository;
@@ -56,8 +57,8 @@ public class PaymentService {
 
     // ================== 카트 정보 가져오기 ================
 
-    public PaymentResponse.CartPaymentDTO getCartInfo(Long cartId) {
-        List<CartItem> checkItem = getChecked(cartId);
+    public PaymentResponse.CartPaymentDTO getCartInfo(Long cartId, Long userId) {
+        List<CartItem> checkItem = getChecked(cartId, userId);
         List<PaymentResponse.CartItemPaymentDTO> itemsInfo = checkItem.stream()
                 .map(item -> new PaymentResponse.CartItemPaymentDTO(
                         item.getId(),
@@ -77,9 +78,12 @@ public class PaymentService {
     }
 
     // cartCheck 검증 편의
-    private List<CartItem> getChecked(Long cartId) {
+    private List<CartItem> getChecked(Long cartId, Long userId) {
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(() -> new Exception404("장바구니를 찾을 수 없습니다."));
+        if (!cart.getUser().getId().equals(userId)) {
+            throw new Exception403("본인의 장바구니만 결제할 수 있습니다.");
+        }
         List<CartItem> cartItems = cartItemRepository.findByCartId(cartId);
         List<CartItem> checkItem = cartItems.stream()
                 .filter(CartItem::isItemChecked)
@@ -119,9 +123,8 @@ public class PaymentService {
     // 목 결제
 
     public Payment processMockPayment(User sessionUser, Long cartId, PaymentRequest.CreateDTO createDTO) {
+        List<CartItem> checkItem = getChecked(cartId, sessionUser.getId());
         Order order = orderService.createOrder(sessionUser.getId());
-
-        List<CartItem> checkItem = getChecked(cartId);
         for (CartItem item : checkItem) {
             Payment payment = Payment.builder()
                     .user(sessionUser)
@@ -154,9 +157,17 @@ public class PaymentService {
     // toss 결제
     @Transactional
     public PaymentResponse.PaymentResultDTO approvePayment(User sessionUser, Long cartId, PaymentRequest.CreateDTO createDTO) {
-        List<CartItem> checkItem = getChecked(cartId);
+        List<CartItem> checkItem = getChecked(cartId, sessionUser.getId());
+        long expectedAmount = checkItem.stream().mapToLong(CartItem::getTotalPrice).sum();
+        // 금액은 브라우저가 보낸 값이라 승인 전에 서버 계산값과 맞춰본다
+        if (createDTO.getAmount() == null || createDTO.getAmount() != expectedAmount) {
+            throw new Exception400("결제 금액이 주문 금액과 일치하지 않습니다.");
+        }
         PaymentGateway gateway = gatewayResolver.resolve(createDTO.getMethod());
         PaymentResult paymentResult = gateway.approve(createDTO);
+        if (!paymentResult.isSuccess()) {
+            throw new Exception400("결제 승인에 실패했습니다: " + paymentResult.getFailureMessage());
+        }
         Order order = orderService.createOrder(sessionUser.getId());
 
         for (CartItem item : checkItem) {
@@ -217,11 +228,14 @@ public class PaymentService {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new Exception404("결제내역 찾을수 없음"));
 
+        checkOwnedAndPaid(payment, userId);
+
         History history = historyRepository.findByPaymentId(paymentId).orElseThrow(() -> new Exception404("없음"));
 
         String old_value = payment.getStatus().name();
 
-        Long refundAmount = (req.getAmount() != null) ? req.getAmount() : payment.getAmount();
+        // 전액 환불만 지원: 상태(REFUNDED)와 재고 복구가 전액 기준이라 금액은 서버 값만 쓴다
+        Long refundAmount = payment.getAmount();
         String refundReason = (req.getReason() != null) ? req.getReason() : "고객요청";
 
         PaymentRequest.RefundDTO refundDTO = new PaymentRequest.RefundDTO();
@@ -235,8 +249,8 @@ public class PaymentService {
         PaymentRefund refund = PaymentRefund.builder()
                 .user(user)
                 .payment(payment)
-                .amount(req.getAmount())
-                .reason(req.getReason())
+                .amount(refundAmount)
+                .reason(refundReason)
                 .status(RefundStatus.REQUESTED)
                 .requestedAt(LocalDateTime.now())
                 .build();
@@ -254,15 +268,18 @@ public class PaymentService {
             historyRepository.delete(history);
         }
 
-        increaseQuantity(save.getProduct().getId(), save.getQuantity());
+        if (result.isSuccess()) {
+            increaseQuantity(save.getProduct().getId(), save.getQuantity());
+        }
 
         return new PaymentResponse.SingleRefundDTO(refund);
     }
 
     @Transactional
-    public void confirmPurchase(Long paymentId) {
+    public void confirmPurchase(Long paymentId, Long userId) {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new Exception404("결제내역 찾을수 없음"));
+        checkOwnedAndPaid(payment, userId);
         History history = historyRepository.findByPaymentId(paymentId).orElseThrow(() -> new Exception404("기록없음"));
         String old_value = payment.getStatus().name();
 
@@ -270,6 +287,16 @@ public class PaymentService {
         paymentHistory(payment, payment.getUser(), old_value, payment.getStatus().name(), Field.STATUS, null);
         if (old_value.equals(history.getNew_value())) {
             historyRepository.delete(history);
+        }
+    }
+
+    // 본인 결제이고, 아직 환불·구매확정 전(SUCCESS)일 때만 상태를 바꿀 수 있다
+    private void checkOwnedAndPaid(Payment payment, Long userId) {
+        if (!payment.getUser().getId().equals(userId)) {
+            throw new Exception403("본인의 결제만 처리할 수 있습니다.");
+        }
+        if (payment.getStatus() != PaymentStatus.SUCCESS) {
+            throw new Exception400("이미 처리된 결제입니다.");
         }
     }
 

@@ -61,9 +61,9 @@ public class UserService {
         }
 
         // 비밀번호 검증
-//        if (!passwordEncoder.matches(loginDTO.getPassword(), userEntity.getPassword())) {
-//            throw new Exception401("아이디 또는 비밀번호가 일치하지 않습니다.");
-//        }
+        if (!passwordEncoder.matches(loginDTO.getPassword(), userEntity.getPassword())) {
+            throw new Exception401("아이디 또는 비밀번호가 일치하지 않습니다.");
+        }
 
         return userEntity;
     }
@@ -78,6 +78,7 @@ public class UserService {
         User userEntity = userRepository
                 .findById(userId).orElseThrow(() -> new Exception404("사용자를 찾지 못하겠어요"));
 
+        updateDTO.setPassword(passwordEncoder.encode(updateDTO.getPassword()));
         userEntity.update(updateDTO);
 
         return userEntity;

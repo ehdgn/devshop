@@ -2,10 +2,10 @@
 
 -- User 데이터 (비밀번호는 예시로 '1234' 가정)
 INSERT INTO user_tb (id, username, password, nickname, email, phone_number, gender, birthday, provider, created_at, updated_at) VALUES
-                                                                                                                                    (1, 'user01', '12341234', '관리자', 'admin@example.com', '010-1111-1111', 'N', '1990-01-01', 'LOCAL', NOW(), NOW()),
-                                                                                                                                    (2, 'user02', '12341234', '대박판매자', 'seller01@example.com', '010-2222-2222', 'M', '1985-05-20', 'LOCAL', NOW(), NOW()),
-                                                                                                                                    (3, 'user03', '12341234', '쇼핑왕', 'user01@example.com', '010-3333-3333', 'F', '1995-12-25', 'LOCAL', NOW(), NOW()),
-                                                                                                                                    (4, 'user04', '12341234', '새오너', 'user04@example.com', '010-4444-4444', 'F', '1995-12-25', 'LOCAL', NOW(), NOW())
+                                                                                                                                    (1, 'user01', '$2a$10$qJJKMCr2fX38Z8szzalJC.T6w5qoDbZbOa/WdVtaGz.8d0QouXnhS', '관리자', 'admin@example.com', '010-1111-1111', 'N', '1990-01-01', 'LOCAL', NOW(), NOW()),
+                                                                                                                                    (2, 'user02', '$2a$10$qJJKMCr2fX38Z8szzalJC.T6w5qoDbZbOa/WdVtaGz.8d0QouXnhS', '대박판매자', 'seller01@example.com', '010-2222-2222', 'M', '1985-05-20', 'LOCAL', NOW(), NOW()),
+                                                                                                                                    (3, 'user03', '$2a$10$qJJKMCr2fX38Z8szzalJC.T6w5qoDbZbOa/WdVtaGz.8d0QouXnhS', '쇼핑왕', 'user01@example.com', '010-3333-3333', 'F', '1995-12-25', 'LOCAL', NOW(), NOW()),
+                                                                                                                                    (4, 'user04', '$2a$10$qJJKMCr2fX38Z8szzalJC.T6w5qoDbZbOa/WdVtaGz.8d0QouXnhS', '새오너', 'user04@example.com', '010-4444-4444', 'F', '1995-12-25', 'LOCAL', NOW(), NOW())
 
 ;
 
