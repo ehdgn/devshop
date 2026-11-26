@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -32,8 +33,6 @@ public class UserService {
     private static final int TOP_USERS_COUNT = 3;
 
 
-    @Value("${tenco.key}")
-    private String tencoKey;
 
     @Transactional
     public User signUp(@Valid UserRequest.SignUpDTO signUpDTO) {
@@ -85,28 +84,44 @@ public class UserService {
     }
 
     @Transactional
-    public User findOrCreateKakaoUser(String username, UserResponse.KakaoProfile profile) {
-
-        User userOrigin = userRepository.findByUsername(username).orElse(null);
+    public User findOrCreateKakaoUser(UserResponse.KakaoProfile profile) {
+        // 카카오 회원번호로 찾는다: username 으로 찾으면 같은 이름으로 먼저 가입한 일반 계정에 로그인될 수 있음
+        String kakaoId = String.valueOf(profile.getId());
+        User userOrigin = userRepository.findByProviderAndProviderId(OAuthProvider.KAKAO, kakaoId).orElse(null);
 
         if (userOrigin != null) {
             return userOrigin;
         }
 
+        String email = profile.getKakaoAccount().getEmail();
+        if (email != null && userRepository.findByEmail(email).isPresent()) {
+            throw new Exception400("같은 이메일로 가입된 계정이 있습니다. 아이디로 로그인해주세요.");
+        }
+
         User newUser = User.builder()
-                .username(username)
-                .password(tencoKey) // 또는 랜덤값
+                .username(uniqueUsername("kakao_" + kakaoId))
+                .password(passwordEncoder.encode(UUID.randomUUID().toString())) // 비밀번호 로그인 불가: 카카오로만 로그인
+                .provider(OAuthProvider.KAKAO)
+                .providerId(kakaoId)
                 .nickname(profile.getKakaoAccount().getName())
                 .email(profile.getKakaoAccount().getEmail())
                 .phoneNumber(profile.getKakaoAccount().getPhoneNumber().replace("+82 ", "0"))
                 .gender(SocialUtils.convertGender(profile.getKakaoAccount().getGender()))
                 .birthday(SocialUtils.convertBirthday(profile.getKakaoAccount().getBirthyear(), profile.getKakaoAccount().getBirthday()))
-                .provider(OAuthProvider.KAKAO)
                 .build();
 
         UserRole userRole = new UserRole(newUser, RoleType.USER);
         newUser.setRole(userRole);
         return userRepository.save(newUser);
+    }
+
+    // 일반 회원이 같은 아이디를 이미 쓰고 있으면 뒤에 무작위 문자를 붙인다
+    private String uniqueUsername(String base) {
+        String username = base;
+        while (userRepository.findByUsername(username).isPresent()) {
+            username = base + "_" + UUID.randomUUID().toString().substring(0, 4);
+        }
+        return username;
     }
 
 
