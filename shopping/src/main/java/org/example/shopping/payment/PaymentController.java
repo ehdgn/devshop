@@ -7,6 +7,8 @@ import org.example.shopping.payment.dto.PaymentResponse;
 import org.example.shopping.payment.service.PaymentService;
 import org.example.shopping.users.User;
 import org.springframework.core.env.Environment;
+import org.example.shopping.payment.paymentEnum.RefundStatus;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -90,6 +92,10 @@ public class PaymentController {
                                                                   @RequestBody PaymentRequest.RefundDTO req) {
         User sessionUser = (User) session.getAttribute("sessionUser");
         PaymentResponse.SingleRefundDTO response = paymentService.refund(orderItemId, sessionUser.getId(), req);
+        // PG 환불 실패는 기록은 남기되 화면에는 실패로 알려야 한다
+        if (response.getStatus() == RefundStatus.FAILED) {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(response);
+        }
         return ResponseEntity.ok().body(response);
     }
 

@@ -127,6 +127,9 @@
 </main>
 
 <script>
+    // 뒤로가기로 메모리에서 되살아난 페이지(bfcache)는 예전 상태라 새로 불러온다
+    window.addEventListener('pageshow', e => { if (e.persisted) location.reload(); });
+
     function toggleCheck(cartItemId, checkbox) {
         fetch(`/cart/items/${cartItemId}`, {
             method: 'PUT'

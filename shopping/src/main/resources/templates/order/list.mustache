@@ -57,6 +57,9 @@
 </div>
 
 <script>
+    // 뒤로가기로 메모리에서 되살아난 페이지(bfcache)는 예전 상태라 새로 불러온다
+    window.addEventListener('pageshow', e => { if (e.persisted) location.reload(); });
+
     function updateOrderStatus(item) {
         const statusEl = item.querySelector('.status');
         const status = statusEl.dataset.status;
@@ -98,7 +101,8 @@
                     let response = await fetch(`/order/items/${itemId}/confirm`, {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
                         }
                     });
 
@@ -108,8 +112,8 @@
                         item.querySelector('.refundBtn').style.display = 'none';
                         item.querySelector('.reviewBtn').style.display = '';
                     } else {
-                        console.error(response);
-                        alert("구매확정에 실패했습니다.");
+                        const errorData = await response.json().catch(() => ({}));
+                        alert(errorData.message || "구매확정에 실패했습니다.");
                     }
 
                 } catch (e) {
@@ -131,7 +135,8 @@
                     let response = await fetch(`/order/items/${itemId}/refund`, {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
                         },
                         body: JSON.stringify( {
                             reason: reason,
@@ -148,9 +153,8 @@
 
                         alert("환불이 완료되었습니다.");
                     } else {
-                        const errorData = await response.json();
-                        console.error(errorData);
-                        alert("반품에 실패했습니다.");
+                        const errorData = await response.json().catch(() => ({}));
+                        alert(errorData.message || "반품에 실패했습니다. 잠시 후 다시 시도해주세요.");
                     }
 
                 } catch (e) {

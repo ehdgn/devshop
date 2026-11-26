@@ -1,5 +1,6 @@
 package org.example.shopping.cart;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.example.shopping.users.User;
@@ -15,7 +16,9 @@ public class CartController {
 
     // 장바구니 조회
     @GetMapping("/cart/list")
-    public String cartItemList(Model model, HttpSession session) {
+    public String cartItemList(Model model, HttpSession session, HttpServletResponse response) {
+        // 수량 변경·삭제 후 뒤로가기 시 캐시된 예전 상태가 보이지 않도록
+        response.setHeader("Cache-Control", "no-store");
         User sessionUser = (User) session.getAttribute("sessionUser");
 
         CartResponse.CartDTO cart = cartService.getCartByUserId(sessionUser.getId());

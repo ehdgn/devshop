@@ -1,5 +1,6 @@
 package org.example.shopping.order;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.example.shopping.users.User;
@@ -16,7 +17,9 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping("/order/list")
-    public String list(Model model, HttpSession session, @RequestParam(required = false) String keyword){
+    public String list(Model model, HttpSession session, @RequestParam(required = false) String keyword, HttpServletResponse response){
+        // 환불·구매확정 후 뒤로가기 시 캐시된 예전 상태가 보이지 않도록
+        response.setHeader("Cache-Control", "no-store");
         User sessionUser = (User) session.getAttribute("sessionUser");
 
         List<OrderResponse.OrderListDTO> orderList = orderService.orderList(sessionUser.getId(), keyword);
