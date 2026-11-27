@@ -1,49 +1,29 @@
-<link rel="stylesheet" href="/css/review/review-save.css">
-<div>
-    <div class="review-header">
-        <h1>상품 리뷰 작성</h1>
-        <p class="text-muted">구매하신 상품에 대한 솔직한 후기를 남겨주세요.</p>
+<h1 class="mp-title">리뷰 쓰기</h1>
+<form action="/review/{{productId}}/save" method="post" enctype="multipart/form-data" class="mp-panel mp-form">
+    <fieldset class="mp-field">
+        <legend>상품은 만족스러우셨나요?</legend>
+        <div class="mp-rate">
+            <input type="radio" id="star-5" name="rating" value="5" required><label for="star-5" title="5점">★</label>
+            <input type="radio" id="star-4" name="rating" value="4" ><label for="star-4" title="4점">★</label>
+            <input type="radio" id="star-3" name="rating" value="3" ><label for="star-3" title="3점">★</label>
+            <input type="radio" id="star-2" name="rating" value="2" ><label for="star-2" title="2점">★</label>
+            <input type="radio" id="star-1" name="rating" value="1" ><label for="star-1" title="1점">★</label>
+        </div>
+    </fieldset>
+
+    <label class="mp-field">
+        <span>리뷰 내용</span>
+        <textarea name="content" rows="6" required
+                  placeholder="품질, 배송, 사용감처럼 다른 구매자에게 도움이 될 내용을 적어 주세요."></textarea>
+    </label>
+
+    <label class="mp-field">
+        <span>사진 <small>(선택, JPG·PNG)</small></span>
+        <input type="file" name="reviewImage" accept="image/*">
+    </label>
+
+    <div class="mp-form-actions">
+        <button type="button" class="btn-line" onclick="history.back()">취소</button>
+        <button type="submit" class="btn-buy">리뷰 등록</button>
     </div>
-
-    <form action="/review/{{productId}}/save" method="post" enctype="multipart/form-data" class="review-form">
-        <div class="review-section text-center">
-            <label class="section-label">상품은 만족스러우셨나요?</label>
-            <div class="star-rating">
-                <input type="radio" id="5-stars" name="rating" value="5"/>
-                <label for="5-stars" class="star">&#9733;</label>
-                <input type="radio" id="4-stars" name="rating" value="4"/>
-                <label for="4-stars" class="star">&#9733;</label>
-                <input type="radio" id="3-stars" name="rating" value="3"/>
-                <label for="3-stars" class="star">&#9733;</label>
-                <input type="radio" id="2-stars" name="rating" value="2"/>
-                <label for="2-stars" class="star">&#9733;</label>
-                <input type="radio" id="1-star" name="rating" value="1" checked/>
-                <label for="1-star" class="star">&#9733;</label>
-            </div>
-            <p class="rating-guide text-muted">별점을 클릭하여 평가해주세요.</p>
-        </div>
-
-        <div class="review-section">
-            <label for="content" class="section-label">상세 리뷰</label>
-            <textarea class="form-control review-textarea" rows="6"
-                      placeholder="상품의 품질, 배송, 디자인 등 다른 구매자에게 도움이 될 내용을 적어주세요."
-                      name="content" id="content" required></textarea>
-        </div>
-
-        <div class="review-section">
-            <label class="section-label">사진 첨부 <span class="optional">(선택)</span></label>
-            <div class="image-upload-wrapper">
-                <input type="file" class="form-control" id="reviewImage" name="reviewImage" accept="image/*">
-                <div class="upload-guide">
-                    <i class="fa-solid fa-camera"></i>
-                    <span>이미지 파일 업로드 (JPG, PNG)</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="form-actions">
-            <button type="submit" class="btn-review-submit">리뷰 작성 완료</button>
-            <button type="button" class="btn-review-cancel" onclick="history.back();">취소</button>
-        </div>
-    </form>
-</div>
+</form>

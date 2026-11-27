@@ -1,12 +1,11 @@
 {{> layout/header}}
 
-<div class="admin-owner-wrapper">
-    {{> layout/mypage-sidebar}}
-
-    <div class="content-section">
-        <h2 class="mb-4">주문 목록</h2>
+<main class="site-container mp">
+    {{> layout/mypage-nav}}
+    <section class="mp-body">
+        <h1 class="mp-title">주문 내역</h1>
         {{> order/list}}
-    </div>
-</div>
+    </section>
+</main>
 
 {{> layout/footer}}

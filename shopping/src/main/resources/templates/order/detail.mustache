@@ -1,37 +1,30 @@
-<div class="mypage-content-box">
-    <div class="order-box">
+{{#order}}
+<a href="/order/list" class="ct-back mp-back"><i class="bi bi-arrow-left" aria-hidden="true"></i> 주문 내역</a>
+<h1 class="mp-title">주문 상세</h1>
 
-        {{#order}}
-            <div class="order-card">
-                <div class="order-header">주문상품 {{orderItems.size}}개</div>
-                {{#orderItems}}
-                    <div class="order-item">
-                        <img src="{{thumbnailUrl}}"
-                             alt="{{productName}}" class="product-image">
-                        <div class="order-item-info">
-                            <h4>{{productName}}</h4>
-                            <p>상품코드: {{productCode}}</p>
-                            <p>총액: {{orderAmount}}원</p>
-                            <p>수량: {{quantity}}개</p>
-                            <span class="status">{{statusDisplay}}</span>
-                        </div>
-                    </div>
-                {{/orderItems}}
+<div class="ct-layout">
+    <section class="mp-order" aria-label="주문 상품">
+        <header class="mp-order-head"><div><strong>주문 상품 {{orderItems.size}}개</strong></div></header>
+        {{#orderItems}}
+        <div class="mp-order-item" data-status="{{status}}">
+            <a href="/products/{{productId}}" class="ct-thumb"><img src="{{thumbnailUrl}}" alt=""></a>
+            <div class="mp-order-info">
+                <span class="mp-status">{{statusDisplay}}</span>
+                <a href="/products/{{productId}}" class="ct-name">{{productName}}</a>
+                <p class="ct-code">{{productCode}} · {{quantity}}개</p>
             </div>
+            <p class="ct-price"><strong>{{orderAmount}}원</strong></p>
+        </div>
+        {{/orderItems}}
+    </section>
 
-
-            <div class="order-card">
-                <div class="order-header">결제 정보</div>
-                <div class="order-item">
-                    <div class="order-item-info">
-                        <p>결제 방법: {{method}}</p>
-                        <p>결제 날짜: {{approvedAt}}</p>
-                        <p>결제 총액: {{totalAmount}}원</p>
-                    </div>
-                </div>
-            </div>
-
-        {{/order}}
-
-    </div>
+    <aside class="ct-summary" aria-label="결제 정보">
+        <h2>결제 정보</h2>
+        <dl>
+            <div><dt>결제 수단</dt><dd>{{#method}}{{method}}{{/method}}</dd></div>
+            <div><dt>결제 일시</dt><dd>{{#approvedAt}}{{approvedAt}}{{/approvedAt}}{{^approvedAt}}-{{/approvedAt}}</dd></div>
+        </dl>
+        <p class="ct-total"><span>결제 금액</span><strong>{{totalAmount}}원</strong></p>
+    </aside>
 </div>
+{{/order}}

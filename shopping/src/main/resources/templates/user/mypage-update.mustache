@@ -1,12 +1,11 @@
 {{> layout/header}}
 
-<div class="admin-owner-wrapper">
-    {{> layout/mypage-sidebar}}
-
-    <div class="content-section">
-        <h2 class="mb-4">내 정보 수정</h2>
+<main class="site-container mp">
+    {{> layout/mypage-nav}}
+    <section class="mp-body">
+        <h1 class="mp-title">내 정보 수정</h1>
         {{> user/update-section}}
-    </div>
-</div>
+    </section>
+</main>
 
 {{> layout/footer}}
