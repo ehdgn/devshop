@@ -48,7 +48,7 @@ public class PaymentController {
     public String createPayment(PaymentRequest.CreateDTO createDTO, HttpSession session, @PathVariable Long cartId) {
         User sessionUser = (User) session.getAttribute("sessionUser");
         paymentService.createPayment(createDTO, sessionUser, cartId);
-        return "redirect:/";
+        return "redirect:/order/list"; // 모의 결제도 결과를 바로 볼 수 있게 주문 내역으로
 
     }
 
