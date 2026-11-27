@@ -1,21 +1,86 @@
 {{> layout/header }}
 
-<main class="site-container">
-    <section class="shelf">
-        <div class="shelf-head">
-            <h2>{{category.categoryName}}</h2>
-            <p><a href="/" class="text-link">전체 상품 보기</a></p>
-        </div>
-        <div class="tile-grid">
-            {{#products}}
-                {{> product/product-tile }}
-            {{/products}}
-        </div>
-        {{^products}}
-            <div class="empty-state">
-                <p>이 카테고리에는 아직 상품이 없어요.</p>
-                <a href="/" class="btn-line">다른 상품 둘러보기</a>
-            </div>
+<main class="site-container cl">
+    <nav class="pd-crumb" aria-label="현재 위치">
+        <a href="/">홈</a>
+        <i class="bi bi-chevron-right" aria-hidden="true"></i>
+        <span>{{category.categoryName}}</span>
+    </nav>
+
+    <header class="cl-head">
+        <h1>{{category.categoryName}}</h1>
+        <p><b id="cl-count">{{productCount}}</b>개 상품</p>
+    </header>
+
+    <div class="cl-toolbar">
+        <div class="cl-sellers" role="group" aria-label="판매자로 거르기"></div>
+        <label class="cl-sort">
+            <span class="visually-hidden">정렬</span>
+            <select id="cl-sort">
+                <option value="new">최신순</option>
+                <option value="low">낮은 가격순</option>
+                <option value="high">높은 가격순</option>
+                <option value="name">이름순</option>
+            </select>
+        </label>
+    </div>
+
+    <div class="tile-grid" id="cl-grid">
+        {{#products}}
+            {{> product/product-tile }}
         {{/products}}
-    </section>
+    </div>
+    {{^products}}
+        <div class="pd-empty cl-empty">
+            <i class="bi bi-box-seam" aria-hidden="true"></i>
+            <p>이 카테고리에는 아직 상품이 없어요.</p>
+            <a href="/" class="btn-line">전체 상품 둘러보기</a>
+        </div>
+    {{/products}}
+</main>
+
+<script>
+    // 목록이 한 화면 분량이라 정렬·판매자 거르기는 서버 왕복 없이 화면에서 처리
+    (() => {
+        document.querySelectorAll('.category-bar .nav-parent-link').forEach(a => {
+            if (a.getAttribute('href') !== location.pathname) return;
+            a.classList.add('active');
+            a.scrollIntoView({block: 'nearest', inline: 'center'});
+        });
+
+        const grid = document.getElementById('cl-grid');
+        const tiles = [...grid.children];
+        if (!tiles.length) { document.querySelector('.cl-toolbar').remove(); return; }
+        const priceOf = t => parseInt(t.querySelector('.tile-price').textContent.replace(/\D/g, ''), 10);
+        const sellerOf = t => t.querySelector('.tile-seller').textContent.trim();
+        let seller = null;
+
+        const sellers = [...new Set(tiles.map(sellerOf))];
+        const box = document.querySelector('.cl-sellers');
+        const chip = (label, value) => {
+            const b = document.createElement('button');
+            b.type = 'button';
+            b.textContent = label;
+            b.setAttribute('aria-pressed', value === seller);
+            b.onclick = () => { seller = value; render(); };
+            return b;
+        };
+
+        function render() {
+            // 판매자가 한 곳뿐이면 거를 게 없으니 칩을 안 보인다
+            if (sellers.length > 1) box.replaceChildren(chip('전체 판매자', null), ...sellers.map(s => chip(s, s)));
+            const sorted = [...tiles];
+            const mode = document.getElementById('cl-sort').value;
+            if (mode === 'low') sorted.sort((a, b) => priceOf(a) - priceOf(b));
+            if (mode === 'high') sorted.sort((a, b) => priceOf(b) - priceOf(a));
+            if (mode === 'name') sorted.sort((a, b) => a.querySelector('.tile-name').textContent.localeCompare(b.querySelector('.tile-name').textContent, 'ko'));
+            sorted.forEach(t => { t.hidden = seller !== null && sellerOf(t) !== seller; grid.appendChild(t); });
+            document.getElementById('cl-count').textContent = sorted.filter(t => !t.hidden).length;
+        }
+
+        document.getElementById('cl-sort').addEventListener('change', render);
+        render();
+    })();
+</script>
+
 {{> layout/footer }}
