@@ -13,7 +13,7 @@ public class ProductResponse {
             return "/img/no-image.png";
         }
 
-        if (thumbnailUrl.startsWith("http://") || thumbnailUrl.startsWith("https://")) {
+        if (thumbnailUrl.startsWith("http://") || thumbnailUrl.startsWith("https://") || thumbnailUrl.startsWith("/img/")) {
             return thumbnailUrl;
         }
 
