@@ -1,6 +1,5 @@
 {{> layout/header }}
 
-<link rel="stylesheet" href="/css/product/user-detail.css">
 
 <div class="product-detail-container">
     {{#product}}
@@ -34,7 +33,7 @@
                     <h1 class="product-name">{{name}}</h1>
                     <div class="price-info">
                         <span class="discount-rate"></span>
-                        <span class="current-price">{{price}}원</span>
+                        <span class="current-price">{{priceText}}원</span>
                     </div>
 
                     <div class="option-selector">
@@ -50,9 +49,8 @@
 
                     <div class="total-summary">
                         <div class="summary-line">
-                            <p>총 수량 <strong id="total-qty">1</strong>개</p>
-                            <p>총 주문금액 <strong id="total-price" class="text-danger"
-                                              data-price="{{price}}">{{price}}</strong>원</p>
+                            <p>총 주문금액 (<span id="total-qty">1</span>개)</p>
+                            <p><strong id="total-price" data-price="{{price}}">{{priceText}}</strong>원</p>
                         </div>
                     </div>
 
@@ -174,15 +172,6 @@
         margin: 16px auto;
         object-fit: contain;
     }
-
-
-    .main-image-area img {
-        width: 100%;
-        height: auto;
-        display: block;
-        object-fit: contain;
-    }
-
 </style>
 
 

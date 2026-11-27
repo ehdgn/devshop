@@ -29,7 +29,7 @@ public class ReviewController {
 
         model.addAttribute("productId", productId);
 
-        return "review/save-form";
+        return "user/mypage-reviewSave";
     }
 
 

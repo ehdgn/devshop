@@ -37,13 +37,13 @@
             <div class="col-lg-6">
                 <div class="card border-0 shadow-sm p-3">
                     <h5 class="card-title text-center mb-3">결제 상태별 분포</h5>
-                    <canvas id="statusChart"></canvas>
+                    <div class="chart-box"><canvas id="statusChart"></canvas></div>
                 </div>
             </div>
             <div class="col-lg-6">
                 <div class="card border-0 shadow-sm p-3">
                     <h5 class="card-title text-center mb-3">결제 수단별 비중</h5>
-                    <canvas id="methodChart"></canvas>
+                    <div class="chart-box"><canvas id="methodChart"></canvas></div>
                 </div>
             </div>
         </div>
@@ -92,6 +92,9 @@
 
     console.log(statusData)
 
+    // 어두운 화면용 차트 글자·격자 색
+    Chart.defaults.color = '#a0a2a9';
+    Chart.defaults.borderColor = '#2e3035';
     new Chart(ctx, {
         type: 'doughnut',
         data: {
@@ -99,26 +102,13 @@
             datasets: [{
                 label: statusLabels,
                 data: statusData,
-                backgroundColor: [
-                    'rgba(75, 192, 192, 0.8)',   // 청록색
-                    'rgba(255, 99, 132, 0.8)',   // 빨간색
-                    'rgba(255, 206, 86, 0.8)',   // 노란색
-                    'rgba(54, 162, 235, 0.8)',   // 파란색
-                    'rgba(153, 102, 255, 0.8)',  // 보라색
-                    'rgba(255, 159, 64, 0.8)'    // 주황색
-                ],
-                borderColor: [
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ], borderWidth: 1
+                backgroundColor: ['#f3b660', '#ecebe7', '#a0a2a9', '#6fd3a5', '#ff7a7a', '#44464d'],
+                borderColor: '#17181b', borderWidth: 1
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
                     position: 'top',
@@ -137,26 +127,13 @@
             datasets: [{
                 label: "methodLabels",
                 data: methodData,
-                backgroundColor: [
-                    'rgba(75, 192, 192, 0.8)',   // 청록색
-                    'rgba(255, 99, 132, 0.8)',   // 빨간색
-                    'rgba(255, 206, 86, 0.8)',   // 노란색
-                    'rgba(54, 162, 235, 0.8)',   // 파란색
-                    'rgba(153, 102, 255, 0.8)',  // 보라색
-                    'rgba(255, 159, 64, 0.8)'    // 주황색
-                ],
-                borderColor: [
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ], borderWidth: 1
+                backgroundColor: ['#f3b660', '#ecebe7', '#a0a2a9', '#6fd3a5', '#ff7a7a', '#44464d'],
+                borderColor: '#17181b', borderWidth: 1
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
                     position: 'top',
