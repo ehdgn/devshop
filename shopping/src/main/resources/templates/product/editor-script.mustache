@@ -1,0 +1,20 @@
+<link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css">
+<link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/theme/toastui-editor-dark.css">
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+<script>
+    function createEditor(initialValue) {
+        return new toastui.Editor({
+            el: document.getElementById('editor'),
+            height: '420px',
+            initialEditType: 'wysiwyg',
+            theme: 'dark',
+            initialValue: initialValue
+        });
+    }
+
+    // 고른 이미지를 바로 보여 준다
+    document.getElementById('thumbnailInput').addEventListener('change', e => {
+        const file = e.target.files[0];
+        if (file) document.getElementById('previewImage').src = URL.createObjectURL(file);
+    });
+</script>

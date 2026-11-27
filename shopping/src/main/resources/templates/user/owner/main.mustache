@@ -1,11 +1,76 @@
 {{> layout/header}}
 
-<div class="admin-owner-wrapper">
-    {{> layout/owner-sidebar}}
+<main class="site-container mp sc">
+    {{> layout/owner-nav}}
 
-    <div class="content-section">
-        {{> user/owner/dashboard-main}}
-    </div>
-</div>
+    <section class="mp-body">
+        <div class="sc-titlebar">
+            <h1 class="mp-title">운영 현황</h1>
+            <a href="/owner/products/save" class="btn-buy sc-add"><i class="bi bi-plus-lg" aria-hidden="true"></i>상품 등록</a>
+        </div>
+
+        <div class="sc-stats">
+            <a href="/owner/products" class="sc-stat"><span>전체 상품</span><strong>{{totalCount}}</strong></a>
+            <div class="sc-stat"><span>판매 중</span><strong>{{activeCount}}</strong></div>
+            <div class="sc-stat sc-stat-warn"><span>품절</span><strong>{{soldOutCount}}</strong></div>
+        </div>
+
+        <div class="sc-grid">
+            <section class="mp-panel">
+                <header class="sc-panel-head">
+                    <h2>최근 등록 상품</h2>
+                    <a href="/owner/products">전체 보기 <i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+                </header>
+                {{#recentProducts}}
+                <a href="/owner/products/{{id}}" class="sc-mini">
+                    <img src="{{thumbnailUrl}}" alt="">
+                    <span class="sc-mini-name">{{productName}}<small>{{priceText}}원 · 재고 {{stockQuantity}}개</small></span>
+                    <span class="sc-badge" data-status="{{status}}">{{statusLabel}}</span>
+                </a>
+                {{/recentProducts}}
+                {{^recentProducts}}
+                <p class="sc-none">아직 등록한 상품이 없어요.</p>
+                {{/recentProducts}}
+            </section>
+
+            <section class="mp-panel">
+                <header class="sc-panel-head"><h2>재고와 판매 수량</h2></header>
+                <canvas id="Chart" aria-label="최근 상품의 재고와 판매 수량 막대 그래프" role="img"></canvas>
+            </section>
+        </div>
+    </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+    const productNames = [];
+    const stockData = [];
+    const minusData = [];
+    {{#recentProducts}}
+    productNames.push("{{productName}}");
+    stockData.push({{stockQuantity}});
+    minusData.push({{minusQuantity}});
+    {{/recentProducts}}
+
+    // 어두운 화면용 차트 글자·격자 색
+    Chart.defaults.color = '#a0a2a9';
+    Chart.defaults.borderColor = '#2e3035';
+    new Chart(document.getElementById('Chart'), {
+        type: 'bar',
+        data: {
+            labels: productNames,
+            datasets: [
+                {label: '현재 재고', data: stockData, backgroundColor: '#5b5e66', borderRadius: 4},
+                {label: '판매 수량', data: minusData, backgroundColor: '#f3b660', borderRadius: 4}
+            ]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            plugins: {legend: {position: 'bottom'}},
+            scales: {x: {beginAtZero: true}, y: {ticks: {callback(v) { const l = this.getLabelForValue(v); return l.length > 12 ? l.slice(0, 12) + '…' : l; }}}}
+        }
+    });
+</script>
 
 {{> layout/footer}}

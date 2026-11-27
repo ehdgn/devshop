@@ -1,0 +1,18 @@
+<header class="mp-head">
+    <p class="mp-hello"><b>{{sessionUser.nickname}}</b>님의 판매자 센터</p>
+    <nav class="mp-tabs" aria-label="판매자 센터 메뉴">
+        <a href="/owner/dashboard" data-match="/owner/dashboard">운영 현황</a>
+        <a href="/owner/products" data-match="/owner/products">상품 관리</a>
+        <a href="/owner/products/save" data-match="/owner/products/save">상품 등록</a>
+        <a href="/owner/chatRoom/me" data-match="/owner/chatRoom">관리자 문의</a>
+    </nav>
+</header>
+<script>
+    // 가장 길게 맞는 메뉴 하나만 표시한다 (상품 등록이 상품 관리보다 우선)
+    (() => {
+        const hit = [...document.querySelectorAll('.mp-tabs a')]
+            .filter(a => location.pathname.startsWith(a.dataset.match))
+            .sort((a, b) => b.dataset.match.length - a.dataset.match.length)[0];
+        if (hit) hit.setAttribute('aria-current', 'page');
+    })();
+</script>

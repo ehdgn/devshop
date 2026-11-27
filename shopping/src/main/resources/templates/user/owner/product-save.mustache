@@ -1,12 +1,73 @@
 {{> layout/header}}
 
-<div class="admin-owner-wrapper">
-    {{> layout/owner-sidebar}}
+<main class="site-container mp sc">
+    {{> layout/owner-nav}}
 
-    <div class="content-section">
-        <h2 class="mb-4">신규 상품 등록</h2>
-        {{> product/save-form}}
-    </div>
-</div>
+    <section class="mp-body">
+        <h1 class="mp-title">상품 등록</h1>
+
+        <form action="/owner/products/save" method="post" enctype="multipart/form-data" id="productForm" class="mp-form sc-form">
+            <div class="mp-panel sc-fields">
+                <label class="mp-field sc-wide">
+                    <span>상품 이름 <em class="req-star">*</em></span>
+                    <input type="text" name="productName" placeholder="예) 기계식 키보드 87키" required>
+                </label>
+                <label class="mp-field">
+                    <span>카테고리 <em class="req-star">*</em></span>
+                    <select name="categoryId" required>
+                        <option value="">카테고리 선택</option>
+                        {{#category}}<option value="{{id}}">{{categoryName}}</option>{{/category}}
+                    </select>
+                </label>
+                <label class="mp-field">
+                    <span>상품 코드 <em class="req-star">*</em></span>
+                    <input type="text" name="productCode" placeholder="예) P0001" required>
+                </label>
+                <label class="mp-field">
+                    <span>가격 (원) <em class="req-star">*</em></span>
+                    <input type="number" name="price" min="1" placeholder="0" required>
+                </label>
+                <label class="mp-field">
+                    <span>재고 수량 <em class="req-star">*</em></span>
+                    <input type="number" name="stockQuantity" min="0" placeholder="0" required>
+                </label>
+                <div class="mp-field sc-wide">
+                    <span>대표 이미지 <em class="req-star">*</em></span>
+                    <div class="sc-thumb-row">
+                        <img id="previewImage" class="sc-thumb" src="/img/no-image.png" alt="">
+                        <input type="file" name="thumbnail" id="thumbnailInput" accept="image/*" required aria-label="대표 이미지 파일">
+                    </div>
+                </div>
+            </div>
+
+            <div class="mp-panel">
+                <div class="mp-field">
+                    <span>상품 설명 <em class="req-star">*</em></span>
+                    <div id="editor"></div>
+                    <input type="hidden" name="description" id="description">
+                </div>
+            </div>
+
+            <div class="mp-form-actions">
+                <a href="/owner/products" class="btn-line">취소</a>
+                <button type="submit" class="btn-buy">등록하기</button>
+            </div>
+        </form>
+    </section>
+</main>
+
+{{> product/editor-script}}
+<script>
+    const editor = createEditor('');
+    document.getElementById('productForm').addEventListener('submit', e => {
+        const content = editor.getHTML();
+        if (editor.getMarkdown().trim() === '') {
+            alert('상품 설명을 입력해주세요.');
+            e.preventDefault();
+            return;
+        }
+        document.getElementById('description').value = content;
+    });
+</script>
 
 {{> layout/footer}}

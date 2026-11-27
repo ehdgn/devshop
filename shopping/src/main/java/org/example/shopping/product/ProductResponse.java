@@ -20,6 +20,14 @@ public class ProductResponse {
         return "/images/" + thumbnailUrl;
     }
 
+    private static String statusLabel(ProductStatus status) {
+        return switch (status) {
+            case ACTIVE -> "판매중";
+            case INACTIVE -> "판매 중지";
+            case SOLD_OUT -> "품절";
+        };
+    }
+
     @Data
     public static class MainCardDTO {
         private Long id;
@@ -85,12 +93,18 @@ public class ProductResponse {
         private String status;
         private String createdAt;
         private String thumbnailUrl;
+        private String priceText;
+        private String statusLabel;
+        private boolean soldOut;
 
         public ListDTO(Product product) {
             this.id = product.getId();
             this.productName = product.getProductName();
             this.price = product.getPrice().intValue();
+            this.priceText = MoneyUtils.format(product.getPrice());
             this.status = product.getStatus().name();
+            this.statusLabel = statusLabel(product.getStatus());
+            this.soldOut = product.getStatus() == ProductStatus.SOLD_OUT;
             this.thumbnailUrl = getImagePath(product.getThumbnailUrl());
             this.stockQuantity = product.getStockQuantity();
             this.minusQuantity = product.getMinusQuantity();
@@ -118,12 +132,18 @@ public class ProductResponse {
         private String categoryName;
         private String status;
         private String createdAt;
+        private String priceText;
+        private String statusLabel;
+        private boolean soldOut;
 
         public DetailDTO(Product product) {
             this.id = product.getId();
             this.productName = product.getProductName();
             this.productCode = product.getProductCode();
             this.price = product.getPrice().intValue();
+            this.priceText = MoneyUtils.format(product.getPrice());
+            this.statusLabel = statusLabel(product.getStatus());
+            this.soldOut = product.getStatus() == ProductStatus.SOLD_OUT;
             this.stockQuantity = product.getStockQuantity();
             this.minusQuantity = product.getMinusQuantity();
             this.description = product.getDescription();
