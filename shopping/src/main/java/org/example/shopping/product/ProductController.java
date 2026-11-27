@@ -43,6 +43,7 @@ public class ProductController {
         CategoryResponse.DetailDTO category = categoryService.findById(categoryId);
         model.addAttribute("products", products);
         model.addAttribute("category", category);
+        model.addAttribute("productCount", products.size());
         return "category/main";
     }
 
