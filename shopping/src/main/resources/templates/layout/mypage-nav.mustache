@@ -1,0 +1,13 @@
+<header class="mp-head">
+    <p class="mp-hello"><b>{{sessionUser.nickname}}</b>님의 마이페이지</p>
+    <nav class="mp-tabs" aria-label="마이페이지 메뉴">
+        <a href="/order/list" data-match="/order/">주문 내역</a>
+        <a href="/review/list" data-match="/review/">리뷰 관리</a>
+        <a href="/user/update" data-match="/user/update">내 정보</a>
+    </nav>
+</header>
+<script>
+    document.querySelectorAll('.mp-tabs a').forEach(a => {
+        if (location.pathname.startsWith(a.dataset.match)) a.setAttribute('aria-current', 'page');
+    });
+</script>

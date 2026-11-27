@@ -150,7 +150,7 @@ public class UserController {
             model.addAttribute("isMale", user.getGender() == Gender.M);
             model.addAttribute("isFeMale", user.getGender() == Gender.F);
         }
-        model.addAttribute("isNone", user.getGender() == null);
+        model.addAttribute("isNone", user.getGender() == null || user.getGender() == Gender.N);
 
         return "user/mypage-update";
     }

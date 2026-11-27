@@ -1,169 +1,94 @@
-<div class="content-section">
+<form action="/order/list" class="mp-search" role="search">
+    <i class="bi bi-search" aria-hidden="true"></i>
+    <input type="search" name="keyword" value="{{#keyword}}{{keyword}}{{/keyword}}" placeholder="상품 이름으로 찾기" aria-label="주문 검색">
+    {{#keyword}}<a href="/order/list" class="mp-search-reset">전체 보기</a>{{/keyword}}
+</form>
 
-    <div class="order-box">
-        <div class="search-bar">
-            <form action="/order/list">
-                <div class="order-item">
-                    <input type="text" class="" name="keyword" value="{{#keyword}}{{keyword}}{{/keyword}}">
-                    <div>
-                        <button type="submit" class="search"><i class="fa-solid fa-magnifying-glass"></i></button>
-                        <a class="reset" href="/order/list"><i class="fa-solid fa-arrows-rotate"></i></a>
-                    </div>
-                </div>
-            </form>
+{{#orderList}}
+<article class="mp-order">
+    <header class="mp-order-head">
+        <div>
+            <strong>{{orderedAt}}</strong>
+            <span>주문번호 {{orderNumber}}</span>
         </div>
+        <a href="/order/detail?orderId={{id}}">주문 상세 <i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+    </header>
 
-        {{#orderList}}
-            <div class="order-card">
-                <div class="order-header">
-                    <h3 class="order-number">주문번호: {{orderNumber}}</h3>
-                    <span class="order-date">주문일자: {{orderedAt}}</span>
-
-                    <form action="/order/detail" style="margin: 0;">
-                        <input type="hidden" name="orderId" value="{{id}}">
-                        <button type="submit" class="detailBtn">상세보기</button>
-                    </form>
-                </div>
-
-                {{#orderItems}}
-                    <div class="order-item payment">
-                        <img src="{{thumbnailUrl}}"
-                             alt="{{productName}}" class="product-image">
-                        <div class="order-item-info">
-                            <h4>{{productName}}</h4>
-                            <p>개수: {{quantity}}</p>
-                            <p>가격: {{orderAmount}}원</p>
-
-                            <span class="status" data-status="{{status}}">{{statusDisplay}}</span>
-
-                            <div class="order-item-buttons" id="order-item-buttons">
-                                <button class="primary confirmBtn" type="button" data-item-id="{{id}}">구매확정</button>
-                                <button class=" refundBtn" type="button"
-                                        data-item-id="{{id}}">반품신청
-                                </button>
-                                <a href="/review/{{productId}}/save" class="reviewBtn">리뷰 작성</a>
-                            </div>
-                        </div>
-                    </div>
-                {{/orderItems}}
-            </div>
-        {{/orderList}}
-        {{^orderList}}
-            <div class="order-card">
-                <h3>주문내역이 없습니다.</h3>
-            </div>
-        {{/orderList}}
+    {{#orderItems}}
+    <div class="mp-order-item" data-status="{{status}}">
+        <a href="/products/{{productId}}" class="ct-thumb"><img src="{{thumbnailUrl}}" alt=""></a>
+        <div class="mp-order-info">
+            <span class="mp-status">{{statusDisplay}}</span>
+            <a href="/products/{{productId}}" class="ct-name">{{productName}}</a>
+            <p class="ct-code">{{orderAmount}}원 · {{quantity}}개</p>
+        </div>
+        <div class="mp-order-actions">
+            <button type="button" class="btn-buy confirmBtn" data-item-id="{{id}}">구매확정</button>
+            <button type="button" class="btn-line refundBtn" data-item-id="{{id}}">반품 신청</button>
+            <a href="/review/{{productId}}/save" class="btn-line reviewBtn">리뷰 쓰기</a>
+        </div>
     </div>
+    {{/orderItems}}
+</article>
+{{/orderList}}
+
+{{^orderList}}
+<div class="pd-empty">
+    <i class="bi bi-receipt" aria-hidden="true"></i>
+    <p>{{#keyword}}'{{keyword}}'에 맞는 주문이 없어요.{{/keyword}}{{^keyword}}아직 주문한 상품이 없어요.{{/keyword}}</p>
+    <a href="/" class="btn-line ct-empty-link">상품 둘러보기</a>
 </div>
+{{/orderList}}
 
 <script>
     // 뒤로가기로 메모리에서 되살아난 페이지(bfcache)는 예전 상태라 새로 불러온다
     window.addEventListener('pageshow', e => { if (e.persisted) location.reload(); });
 
-    function updateOrderStatus(item) {
-        const statusEl = item.querySelector('.status');
-        const status = statusEl.dataset.status;
+    const STATUS_LABEL = {PAID: '결제 완료', CONFIRMED: '구매 확정', REFUNDED: '환불 완료'};
 
-        if (status === 'PAID') {
-            item.querySelector('.status').textContent = '구매완료';
-            item.querySelector('.confirmBtn').style.display = '';
-            item.querySelector('.refundBtn').style.display = '';
-            item.querySelector('.reviewBtn').style.display = 'none';
-        }
-
-        if (status === 'CONFIRMED') {
-            item.querySelector('.status').textContent = '구매확정';
-            item.querySelector('.confirmBtn').style.display = 'none';
-            item.querySelector('.refundBtn').style.display = 'none';
-            item.querySelector('.reviewBtn').style.display = '';
-        }
-
-        if (status === 'REFUNDED') {
-            item.querySelector('.status').textContent = '환불';
-            item.querySelector('.confirmBtn').style.display = 'none';
-            item.querySelector('.refundBtn').style.display = 'none';
-            item.querySelector('.reviewBtn').style.display = 'none';
-        }
+    // 상태에 따라 보여 줄 버튼: 결제 완료 → 확정·반품, 구매 확정 → 리뷰, 환불 → 없음
+    function renderStatus(item, status) {
+        item.dataset.status = status;
+        item.querySelector('.mp-status').textContent = STATUS_LABEL[status] || status;
+        item.querySelector('.confirmBtn').hidden = status !== 'PAID';
+        item.querySelector('.refundBtn').hidden = status !== 'PAID';
+        item.querySelector('.reviewBtn').hidden = status !== 'CONFIRMED';
     }
 
-    document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll('.mp-order-item').forEach(item => renderStatus(item, item.dataset.status));
 
-        document.querySelectorAll('.order-item-info').forEach(updateOrderStatus);
-
-        document.querySelectorAll('.confirmBtn').forEach(btn => {
-            btn.addEventListener('click', async function () {
-                const item = this.closest('.order-item-info');
-                const itemId = this.dataset.itemId;
-
-                if (!confirm("구매확정 하시겠습니까?")) return;
-
-                try {
-                    let response = await fetch(`/order/items/${itemId}/confirm`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        }
-                    });
-
-                    if (response.ok) {
-                        item.querySelector('.status').textContent = "구매확정";
-                        item.querySelector('.confirmBtn').style.display = 'none';
-                        item.querySelector('.refundBtn').style.display = 'none';
-                        item.querySelector('.reviewBtn').style.display = '';
-                    } else {
-                        const errorData = await response.json().catch(() => ({}));
-                        alert(errorData.message || "구매확정에 실패했습니다.");
-                    }
-
-                } catch (e) {
-                    alert("오류가 발생했습니다." + e.message);
-                }
-            });
+    async function postItem(url, body) {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+            body: body ? JSON.stringify(body) : undefined
         });
+        if (response.ok) return true;
+        const errorData = await response.json().catch(() => ({}));
+        alert(errorData.message || "처리하지 못했습니다. 잠시 후 다시 시도해주세요.");
+        return false;
+    }
 
-        document.querySelectorAll('.refundBtn').forEach(btn => {
-            btn.addEventListener('click', async function () {
-                const item = this.closest('.order-item-info');
-                const itemId = this.dataset.itemId;
+    document.querySelectorAll('.confirmBtn').forEach(btn => btn.addEventListener('click', async () => {
+        if (!confirm("구매확정 하시겠습니까?")) return;
+        try {
+            if (await postItem(`/order/items/${btn.dataset.itemId}/confirm`)) renderStatus(btn.closest('.mp-order-item'), 'CONFIRMED');
+        } catch (e) {
+            alert("오류가 발생했습니다. " + e.message);
+        }
+    }));
 
-                const reason = prompt("환불 사유를 입력해주세요:", "단순 변심");
-                if (!reason) return;
-                if (!confirm("반품하시겠습니까?")) return;
-
-                try {
-                    let response = await fetch(`/order/items/${itemId}/refund`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify( {
-                            reason: reason,
-                            amount: null
-                        })
-                    });
-
-                    if (response.ok) {
-                        const result = await response.json();
-                        item.querySelector('.status').textContent = "환불";
-                        item.querySelector('.confirmBtn').style.display = 'none';
-                        item.querySelector('.refundBtn').style.display = 'none';
-                        item.querySelector('.reviewBtn').style.display = 'none';
-
-                        alert("환불이 완료되었습니다.");
-                    } else {
-                        const errorData = await response.json().catch(() => ({}));
-                        alert(errorData.message || "반품에 실패했습니다. 잠시 후 다시 시도해주세요.");
-                    }
-
-                } catch (e) {
-                    console.error("환불 오류:", e);
-                    alert("오류가 발생했습니다." + e.message);
-                }
-            });
-        });
-    });
-
-    document.querySelectorAll('.order-item-info').forEach(updateOrderStatus);
+    document.querySelectorAll('.refundBtn').forEach(btn => btn.addEventListener('click', async () => {
+        const reason = prompt("환불 사유를 입력해주세요:", "단순 변심");
+        if (!reason) return;
+        if (!confirm("반품하시겠습니까?")) return;
+        try {
+            if (await postItem(`/order/items/${btn.dataset.itemId}/refund`, {reason: reason, amount: null})) {
+                renderStatus(btn.closest('.mp-order-item'), 'REFUNDED');
+                alert("환불이 완료되었습니다.");
+            }
+        } catch (e) {
+            alert("오류가 발생했습니다. " + e.message);
+        }
+    }));
 </script>

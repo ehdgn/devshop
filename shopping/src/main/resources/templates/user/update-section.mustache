@@ -1,44 +1,31 @@
-<div class="mypage-content-inner">
-    <form action="/user/update" method="post">
+<form action="/user/update" method="post" class="mp-panel mp-form">
+    <label class="mp-field">
+        <span>비밀번호 <em class="req-star">*</em></span>
+        {{! 저장된 비밀번호(암호화된 값)를 화면에 넣으면 그대로 다시 암호화돼 로그인이 안 된다. 매번 직접 입력받는다. }}
+        <input type="password" name="password" required minlength="6" maxlength="16" autocomplete="new-password"
+               placeholder="지금 비밀번호 또는 새 비밀번호 (6~16자)">
+    </label>
 
+    <label class="mp-field">
+        <span>닉네임 <em class="req-star">*</em></span>
+        <input type="text" name="nickname" value="{{sessionUser.nickname}}" required minlength="2" maxlength="6">
+    </label>
 
-        <div class="update-form-group">
-            <label for="password">비밀번호 <span class="req-star">*</span></label>
-            <input type="password" class="mypage-input" id="password" name="password" value="{{sessionUser.password}}"
-                   placeholder="6자 이상 16자 이하의 비밀번호를 입력하세요" required>
+    <div class="mp-field">
+        <span>주소 <em class="req-star">*</em></span>
+        {{> user/address-form }}
+    </div>
+
+    <fieldset class="mp-field">
+        <legend>성별</legend>
+        <div class="gender-group">
+            <label class="gender-card"><input type="radio" name="gender" value="M" {{#isMale}}checked{{/isMale}}><span class="gender-text">남성</span></label>
+            <label class="gender-card"><input type="radio" name="gender" value="F" {{#isFeMale}}checked{{/isFeMale}}><span class="gender-text">여성</span></label>
+            <label class="gender-card"><input type="radio" name="gender" value="N" {{#isNone}}checked{{/isNone}}><span class="gender-text">선택 안 함</span></label>
         </div>
+    </fieldset>
 
-        <div class="update-form-group">
-            <label for="nickname">닉네임 <span class="req-star">*</span></label>
-            <input type="text" class="mypage-input" id="nickname" name="nickname" value="{{sessionUser.nickname}}"
-                   required>
-        </div>
-
-        <div class="update-form-group">
-            <label for="address">주소 <span class="req-star">*</span></label>
-            {{> user/address-form }}
-        </div>
-
-        <div class="update-form-group">
-            <label>성별</label>
-            <div class="gender-group">
-                <label class="gender-card">
-                    <input type="radio" name="gender" value="M">
-                    <span class="gender-text">남성</span>
-                </label>
-                <label class="gender-card">
-                    <input type="radio" name="gender" value="F">
-                    <span class="gender-text">여성</span>
-                </label>
-                <label class="gender-card">
-                    <input type="radio" name="gender" value="N" checked>
-                    <span class="gender-text">선택 안 함</span>
-                </label>
-            </div>
-        </div>
-
-        <div>
-            <button type="submit" class="btn-submit-update">수정하기</button>
-        </div>
-    </form>
-</div>
+    <div class="mp-form-actions">
+        <button type="submit" class="btn-buy">저장</button>
+    </div>
+</form>
