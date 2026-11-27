@@ -200,7 +200,7 @@ public class ProductService {
 
     public ProductResponse.UserDetailDTO findByIdForUser(Long id) {
 
-        Product product = productRepository.findByIdWithCategory(id)
+        Product product = productRepository.findByIdWithCategoryAndOwner(id)
                 .orElseThrow(() -> new Exception404("상품을 찾을 수 없습니다"));
 
         log.info("=== 상품 조회 디버깅 ===");
