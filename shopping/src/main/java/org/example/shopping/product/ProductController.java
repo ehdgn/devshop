@@ -63,7 +63,7 @@ public class ProductController {
         User sessionUser = getOwnerUser(session);
         List<ProductResponse.ListDTO> list = productService.findAll(sessionUser.getId());
         model.addAttribute("products", list);
-        model.addAttribute("keyword", "");
+        model.addAttribute("hasProducts", !list.isEmpty()); // 머스태치는 0 을 거짓으로 보지 않는다
         return "user/owner/product-list";
     }
 
@@ -114,6 +114,7 @@ public class ProductController {
         }
 
         model.addAttribute("products", products);
+        model.addAttribute("hasProducts", !products.isEmpty());
         model.addAttribute("keyword", keyword);
         return "user/owner/product-list";
     }
