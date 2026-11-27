@@ -3,10 +3,10 @@ server:
     encoding:
       charset: utf-8
       force: true
+    # 세션 ID 를 URL(;jsessionid=...) 에 붙이지 않는다: 첫 로그인 후 리다이렉트가 404 가 되던 원인
+    session:
+      tracking-modes: cookie
   port: 8080
-
-  session:
-    tracking-modes: cookie
 
 # 2칸 공백, 탭키 절대 사용 금지!
 # 로그 설정 (개발환경용)
