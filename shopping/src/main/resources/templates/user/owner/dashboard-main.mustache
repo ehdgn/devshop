@@ -59,7 +59,7 @@
                             {{/soldOut}}
                         </td>
                         <td class="text-center">
-                            <a href="/owner/products/{{id}}/edit" class="btn btn-sm btn-outline-warning">수정</a>
+                            <a href="/owner/products/{{id}}/edit" class="btn btn-sm btn-outline-secondary">수정</a>
                         </td>
                     </tr>
                 {{/recentProducts}}
@@ -105,15 +105,15 @@
                 {
                     label: '현재 재고',
                     data: stockData,
-                    backgroundColor: 'rgba(75, 192, 192, 0.8)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: '#d3d3d3',
+                    borderColor: '#d3d3d3',
                     borderWidth: 1
                 },
                 {
                     label: '판매 수량',
                     data: minusData,
-                    backgroundColor: 'rgba(255, 99, 132, 0.8)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: '#2d5bff',
+                    borderColor: '#2d5bff',
                     borderWidth: 1
                 }
             ]

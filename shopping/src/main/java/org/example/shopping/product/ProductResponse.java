@@ -51,6 +51,7 @@ public class ProductResponse {
         private String name;
         private String thumbnailUrl;
         private long price;
+        private String priceText; // 화면 표시용 (118,000)
         private String description;
         private Long categoryId;
         private String categoryName;
@@ -60,6 +61,7 @@ public class ProductResponse {
             this.name = product.getProductName();
             this.thumbnailUrl = getImagePath(product.getThumbnailUrl());
             this.price = product.getPrice().intValue();
+            this.priceText = MoneyUtils.format(product.getPrice());
             this.description = product.getDescription();
             this.categoryId = product.getCategory().getId();
             this.categoryName = product.getCategory().getCategoryName();
