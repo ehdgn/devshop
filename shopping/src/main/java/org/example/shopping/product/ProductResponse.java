@@ -55,6 +55,9 @@ public class ProductResponse {
         private String description;
         private Long categoryId;
         private String categoryName;
+        private String ownerName;
+        private int stockQuantity;
+        private boolean soldOut;
 
         public UserDetailDTO(Product product) {
             this.id = product.getId();
@@ -65,6 +68,9 @@ public class ProductResponse {
             this.description = product.getDescription();
             this.categoryId = product.getCategory().getId();
             this.categoryName = product.getCategory().getCategoryName();
+            this.ownerName = product.getOwner().getName();
+            this.stockQuantity = product.getStockQuantity();
+            this.soldOut = product.getStockQuantity() <= 0;
         }
     }
 

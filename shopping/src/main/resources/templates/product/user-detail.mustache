@@ -1,181 +1,141 @@
 {{> layout/header }}
 
+{{#product}}
+<main class="site-container pd">
+    <nav class="pd-crumb" aria-label="현재 위치">
+        <a href="/">홈</a>
+        <i class="bi bi-chevron-right" aria-hidden="true"></i>
+        <a href="/category/{{categoryId}}">{{categoryName}}</a>
+    </nav>
 
-<div class="product-detail-container">
-    {{#product}}
-        <div class="detail-main-content">
-            <div class="content-left">
-                <div class="main-image-area">
-                    {{#thumbnailUrl}}
-                        <img src="{{thumbnailUrl}}" alt="{{name}}">
-                    {{/thumbnailUrl}}
-                    {{^thumbnailUrl}}
-                        <img src="/img/no-image.png" alt="이미지 없음">
-                    {{/thumbnailUrl}}
-                </div>
+    <div class="pd-top">
+        <div class="pd-media">
+            {{#thumbnailUrl}}<img src="{{thumbnailUrl}}" alt="{{name}}">{{/thumbnailUrl}}
+            {{^thumbnailUrl}}<img src="/img/no-image.png" alt="이미지 없음">{{/thumbnailUrl}}
+            {{#soldOut}}<span class="pd-soldout-badge">품절</span>{{/soldOut}}
+        </div>
 
-                <nav class="product-tab-nav">
-                    <ul>
-                        <li class="active" onclick="loadTab('description', this)">상세정보</li>
-                        <li onclick="loadTab('review', this, {{id}})">리뷰</li>
-                    </ul>
-                </nav>
+        <section class="pd-buy" aria-label="구매 정보">
+            <p class="pd-seller"><i class="bi bi-shop" aria-hidden="true"></i>{{ownerName}}</p>
+            <h1 class="pd-name">{{name}}</h1>
+            <p class="pd-price"><strong>{{priceText}}</strong>원</p>
 
-                <div id="tab-content" class="tab-content-area">
-                    <section class="product-description">
-                        {{{description}}}
-                    </section>
+            <dl class="pd-facts">
+                <div><dt>판매자</dt><dd>{{ownerName}}</dd></div>
+                <div><dt>카테고리</dt><dd>{{categoryName}}</dd></div>
+                <div><dt>재고</dt><dd>{{#soldOut}}<span class="pd-out">품절</span>{{/soldOut}}{{^soldOut}}{{stockQuantity}}개 남음{{/soldOut}}</dd></div>
+            </dl>
+
+            <div class="pd-qty-row">
+                <label for="quantity">수량</label>
+                <div class="pd-qty">
+                    <button type="button" onclick="changeQty(-1)" aria-label="수량 줄이기"><i class="bi bi-dash"></i></button>
+                    <input type="number" id="quantity" readonly value="1" data-max="{{stockQuantity}}">
+                    <button type="button" onclick="changeQty(1)" aria-label="수량 늘리기"><i class="bi bi-plus"></i></button>
                 </div>
             </div>
 
-            <aside class="purchase-sidebar">
-                <div class="sticky-box">
-                    <h1 class="product-name">{{name}}</h1>
-                    <div class="price-info">
-                        <span class="discount-rate"></span>
-                        <span class="current-price">{{priceText}}원</span>
-                    </div>
+            <div class="pd-total">
+                <span>총 <b id="total-qty">1</b>개</span>
+                <p><strong id="total-price" data-price="{{price}}">{{priceText}}</strong>원</p>
+            </div>
 
-                    <div class="option-selector">
-                        <p class="option-title">수량선택</p>
-                        <div class="quantity-control">
-                            <button type="button" onclick="changeQty(-1)"><i
-                                    class="fa-solid fa-minus"></i></button>
-                            <input type="number" id="quantity" readonly value="1">
-                            <button type="button" onclick="changeQty(1)"><i
-                                    class="fa-solid fa-plus"></i></button>
-                        </div>
-                    </div>
+            <div class="pd-actions">
+                <button type="button" class="btn-line pd-cart" data-product-id="{{id}}" {{#soldOut}}disabled{{/soldOut}}>장바구니</button>
+                <button type="button" class="btn-buy pd-now" {{#soldOut}}disabled{{/soldOut}}>{{#soldOut}}품절{{/soldOut}}{{^soldOut}}바로구매{{/soldOut}}</button>
+            </div>
+        </section>
+    </div>
 
-                    <div class="total-summary">
-                        <div class="summary-line">
-                            <p>총 주문금액 (<span id="total-qty">1</span>개)</p>
-                            <p><strong id="total-price" data-price="{{price}}">{{priceText}}</strong>원</p>
-                        </div>
-                    </div>
+    <nav class="pd-tabs" aria-label="상품 정보 탭">
+        <button type="button" class="active" onclick="loadTab('description', this)">상세정보</button>
+        <button type="button" onclick="loadTab('review', this, {{id}})">리뷰</button>
+    </nav>
 
-                    <div class="action-buttons">
-                        <button class="cart-btn" data-product-id="{{id}}">장바구니 담기</button>
-                        <button class="buy-now-btn">바로구매</button>
-                    </div>
-                </div>
-            </aside>
-        </div>
+    <div id="tab-content" class="pd-tab-body">
+        <section class="product-description">{{{description}}}</section>
+    </div>
 
-        <script id="origin-description" type="text/template">
-            <section class="product-description">{{{description}}}</section>
-        </script>
-    {{/product}}
+    <script id="origin-description" type="text/template">
+        <section class="product-description">{{{description}}}</section>
+    </script>
+</main>
+
+<div class="pd-mobile-bar">
+    <p><strong>{{priceText}}</strong>원</p>
+    <button type="button" class="btn-buy" onclick="document.querySelector('.pd-buy').scrollIntoView({behavior:'smooth'})" {{#soldOut}}disabled{{/soldOut}}>{{#soldOut}}품절{{/soldOut}}{{^soldOut}}구매하기{{/soldOut}}</button>
 </div>
+{{/product}}
 
 <script>
     async function loadTab(type, element, productId) {
-        document.querySelectorAll('.product-tab-nav li').forEach(li => li.classList.remove('active'));
+        document.querySelectorAll('.pd-tabs button').forEach(b => b.classList.remove('active'));
         element.classList.add('active');
 
         const contentArea = document.getElementById('tab-content');
 
         if (type === 'description') {
             contentArea.innerHTML = document.getElementById('origin-description').innerHTML;
-        } else if (type === 'review') {
-            try {
-                contentArea.innerHTML = '<div class="loading">리뷰를 가져오는 중입니다.</div>';
-
-                const [ratingResponse, reviewResponse] = await Promise.all([
-                    fetch(`/products/${productId}/statistics`),
-                    fetch(`/products/${productId}/reviews`)
-                ]);
-
-                if (ratingResponse.ok && reviewResponse.ok) {
-                    const ratingHtml = await ratingResponse.text();
-                    const reviewHtml = await reviewResponse.text();
-
-                    contentArea.innerHTML = ratingHtml + reviewHtml;
-                } else {
-                    contentArea.innerHTML = '리뷰를 불러오지 못하였습니다.';
-                }
-            } catch (error) {
-                contentArea.innerHTML = '오류 발생';
-                throw new Error("오류 발생");
+            return;
+        }
+        contentArea.innerHTML = '<p class="pd-loading">리뷰를 불러오는 중이에요.</p>';
+        try {
+            const [ratingResponse, reviewResponse] = await Promise.all([
+                fetch(`/products/${productId}/statistics`),
+                fetch(`/products/${productId}/reviews`)
+            ]);
+            if (ratingResponse.ok && reviewResponse.ok) {
+                contentArea.innerHTML = await ratingResponse.text() + await reviewResponse.text();
+            } else {
+                contentArea.innerHTML = '<p class="pd-loading">리뷰를 불러오지 못했어요.</p>';
             }
+        } catch (error) {
+            contentArea.innerHTML = '<p class="pd-loading">리뷰를 불러오지 못했어요.</p>';
         }
     }
 
-    function changeQty(quantity) {
+    function changeQty(delta) {
         const $quantity = document.getElementById('quantity');
-        const $totalQty = document.getElementById('total-qty');
         const $totalPrice = document.getElementById('total-price');
+        const max = parseInt($quantity.dataset.max, 10);
 
-        let currentQty = parseInt($quantity.value, 10);
-        let currentPrice = parseInt($totalPrice.dataset.price, 10);
-
-        const nextQty = currentQty + quantity;
-        if (nextQty <= 0) return;
+        const nextQty = parseInt($quantity.value, 10) + delta;
+        if (nextQty <= 0 || nextQty > max) return;
         $quantity.value = nextQty;
-        $totalQty.textContent = nextQty;
-
-        const nextPrice = currentPrice * nextQty;
-        $totalPrice.textContent = nextPrice.toLocaleString()
+        document.getElementById('total-qty').textContent = nextQty;
+        $totalPrice.textContent = (parseInt($totalPrice.dataset.price, 10) * nextQty).toLocaleString();
     }
 
-    const cartBtn = document.querySelector('.cart-btn');
+    const cartBtn = document.querySelector('.pd-cart');
+    cartBtn.addEventListener('click', async () => {
+        if (await addCart()) alert("장바구니에 상품을 담았습니다.");
+    });
+    // 결제는 장바구니 단위로만 되어 있어서, 바로구매 = 담고 장바구니로 이동
+    document.querySelector('.pd-now').addEventListener('click', async () => {
+        if (await addCart()) location.href = '/cart/list';
+    });
 
-    cartBtn.addEventListener('click', () => {
-        const productId = cartBtn.dataset.productId;
-        const quantity = document.getElementById('quantity').value;
-
-        addCart(productId, quantity);
-    })
-
-        async function addCart(productId, quantity) {
+    async function addCart() {
         {{#sessionUser}}
             const response = await fetch('/cart/items', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
+                headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
                 body: JSON.stringify({
-                    productId,
-                    quantity
+                    productId: cartBtn.dataset.productId,
+                    quantity: document.getElementById('quantity').value
                 })
             });
-
-            if (response.ok) {
-                alert("장바구니에 상품을 담았습니다.");
-            } else {
-                const errorData = await response.json().catch(() => ({}));
-                alert(errorData.message || "오류가 발생하였습니다.");
-            }
+            if (response.ok) return true;
+            const errorData = await response.json().catch(() => ({}));
+            alert(errorData.message || "오류가 발생하였습니다.");
+            return false;
         {{/sessionUser}}
         {{^sessionUser}}
-            alert("로그인해주세요")
+            alert("로그인해주세요");
+            location.href = '/user/login';
+            return false;
         {{/sessionUser}}
     }
 </script>
 
-<style>
-    /* 상세 설명 영역 */
-    .product-detail-content {
-        max-width: 100%;
-        overflow: hidden;
-        line-height: 1.7;
-        font-size: 15px;
-        color: #333;
-    }
-
-    /* 에디터 이미지 */
-    .product-detail-content img {
-        max-width: 100%;
-        height: auto;
-        display: block;
-        margin: 16px auto;
-        object-fit: contain;
-    }
-</style>
-
-
 {{> layout/footer }}
-
-
-
