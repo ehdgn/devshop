@@ -49,8 +49,8 @@ public class CategoryController {
         validateAdmin(session);
 
         List<CategoryResponse.ListDTO> categories = categoryService.findAll();
-        model.addAttribute("categories", categories);
-        model.addAttribute("children", categoryService.findAllByDepth());
+        // "categories" 는 CategoryInterceptor 가 헤더 메뉴 트리로 덮어써서 다른 이름을 쓴다
+        model.addAttribute("categoryList", categories);
 
         return "category/list";
     }

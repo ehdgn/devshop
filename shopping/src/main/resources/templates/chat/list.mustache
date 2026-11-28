@@ -1,39 +1,27 @@
 {{> layout/header }}
 
-<div class="admin-owner-wrapper">
-    {{> layout/admin-sidebar}}
+<main class="site-container mp sc">
+    {{> layout/admin-nav}}
 
-    <div class="content-section">
-        <h2 class="mb-4">목록</h2>
-        <div class="mb-4">
+    <section class="mp-body">
+        <h1 class="mp-title">1:1 상담</h1>
 
-            <div class="chat-list">
-                {{#chatRoomList}}
-                    <form action="/admin/chat/{{chatRoomId}}">
-                        <button name="chatRoomId" value="{{chatRoomId}}">
-                            <div class="chat-header">
-                                <div>
-                                    <i class="fa-solid fa-comments"></i>
-                                </div>
-                                <span> 실시간 상담 [ {{chatRoomId}} ]</span>
-                                <div class="chat-list-badge">
-                                    <span class="chat-status-dot">상담중</span>
-                                </div>
-                            </div>
-                            <div class="chat-body">
-                                <div>
-                                    <div>
-                                        <i class="fa-solid fa-user"></i>
-                                    </div>
-                                   <span>{{userId}}번 회원</span>
-                                </div>
-                            </div>
-                        </button>
-                    </form>
-                {{/chatRoomList}}
-            </div>
-
+        <div class="ad-rooms">
+            {{#chatRoomList}}
+            <a href="/admin/chat/{{chatRoomId}}" class="sc-stat ad-room">
+                <span><i class="bi bi-chat-dots" aria-hidden="true"></i> 상담 방 {{chatRoomId}}</span>
+                <strong>{{userId}}번 회원</strong>
+                <em>대화 열기 <i class="bi bi-chevron-right" aria-hidden="true"></i></em>
+            </a>
+            {{/chatRoomList}}
         </div>
-    </div>
-</div>
+        {{^chatRoomList}}
+        <div class="pd-empty">
+            <i class="bi bi-chat-dots" aria-hidden="true"></i>
+            <p>열린 상담이 없어요.</p>
+        </div>
+        {{/chatRoomList}}
+    </section>
+</main>
+
 {{> layout/footer}}

@@ -21,6 +21,9 @@ public class HistoryResponse {
         private String reason;
         private String createdAt;
         private String updatedAt;
+        private String createdAtText;
+        private String amountText;
+        private String statusLabel;
 
         public ListDTO(History history) {
             this.id = history.getId();
@@ -47,6 +50,17 @@ public class HistoryResponse {
                 this.reason = history.getReason();
             }
             this.createdAt = history.getCreatedAt().toString();
+            String at = this.createdAt.replace('T', ' ');
+            this.createdAtText = at.length() > 16 ? at.substring(0, 16) : at;
+            this.amountText = org.example.shopping._core.utils.MoneyUtils.format(this.amount);
+            this.statusLabel = this.newValue == null ? "-" : switch (this.newValue) {
+                case "PAID", "SUCCESS" -> "결제 완료";
+                case "CONFIRMED" -> "구매 확정";
+                case "REFUNDED" -> "환불";
+                case "PARTIAL_REFUNDED" -> "부분 환불";
+                case "FAILED" -> "실패";
+                default -> this.newValue;
+            };
             if (history.getUpdateAt() == null) {
                 this.updatedAt = "-";
             } else {

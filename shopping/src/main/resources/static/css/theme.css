@@ -785,8 +785,37 @@ a.sc-stat:hover { border-color: var(--line-strong); }
     .sc-fields { grid-template-columns: 1fr; }
     .sc-danger { flex-direction: column; align-items: stretch; }
     .sc-detail-actions a { flex: 1; padding: 0 12px; }
-    .sc-table th:nth-child(2), .sc-table td:nth-child(2), .sc-table th:nth-child(5), .sc-table td:nth-child(5) { display: none; }
+    .sc-table .sc-opt { display: none; }
     .sc-product { min-width: 160px; }
+}
+
+/* ---------- 관리자 센터 (ad-) — 판매자 센터(sc-) 부품을 함께 쓴다 ---------- */
+
+.ad-tabs { overflow-x: auto; scrollbar-width: none; }
+.ad-tabs::-webkit-scrollbar { display: none; }
+.ad-tabs a { flex: none; }
+.ad-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.ad-small { display: inline-flex; align-items: center; justify-content: center; height: 34px; padding: 0 14px; font-size: 13px; }
+.sc-mini form, .sc-row-actions form { margin: 0; }
+.ad-actions { display: inline-flex; gap: 6px; }
+
+.ad-role[data-role="ADMIN"] { background: var(--danger-soft); color: var(--danger); }
+.ad-role[data-role="USER"] { background: var(--line); color: var(--ink); }
+.ad-owner[data-status="APPROVED"], .ad-pay[data-status="CONFIRMED"] { background: var(--line); color: var(--ink); }
+.ad-owner[data-status="SUSPENSION"], .ad-pay[data-status="FAILED"], .ad-pay[data-status*="REFUNDED"] { background: var(--danger-soft); color: var(--danger); }
+
+.ad-charts { margin-bottom: 16px; }
+.ad-chart { position: relative; height: 240px; }
+
+.ad-rooms { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+.ad-room strong { font-size: 20px; }
+.ad-room em { font-style: normal; font-size: 13px; font-weight: 600; color: var(--buy); }
+
+.ad-narrow { max-width: 560px; }
+.ad-kind { margin: 0; font-size: 14px; color: var(--sub); }
+
+@media (max-width: 900px) {
+    .ad-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* ---------- 마이페이지·주문 ---------- */

@@ -26,11 +26,23 @@ public class OwnerResponse {
             this.id = owner.getId();
             this.ownerName = owner.getName();
             this.ownerStatus = owner.getStatus();
-            this.totalProduct = getTotalProduct();
+            this.totalProduct = totalProduct;
         }
 
         public boolean isAPPROVED() {
             return this.ownerStatus == OwnerStatus.APPROVED;
+        }
+
+        public boolean isWAIT() {
+            return this.ownerStatus == OwnerStatus.WAIT;
+        }
+
+        public String getStatusLabel() {
+            return switch (this.ownerStatus) {
+                case WAIT -> "승인 대기";
+                case APPROVED -> "입점 중";
+                case SUSPENSION -> "정지";
+            };
         }
     }
 

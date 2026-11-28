@@ -1,65 +1,42 @@
 {{> layout/header }}
 
-<div class="admin-owner-wrapper">
-    {{> layout/admin-sidebar}}
+<main class="site-container mp sc">
+    {{> layout/admin-nav}}
 
-    <div class="content-section">
+    <section class="mp-body">
         {{#product}}
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-white py-3">
-                    <h4 class="mb-0 fw-bold">{{productName}} <small class="text-muted fs-6">#{{id}}</small></h4>
-                </div>
+        <a href="/admin/products" class="mp-more mp-back"><i class="bi bi-chevron-left" aria-hidden="true"></i> 상품 목록</a>
 
-                <div class="card-body p-4">
-                    {{#thumbnailUrl}}
-                        <div class="product-thumbnail-section mb-4 text-center">
-                            <img src="{{thumbnailUrl}}" alt="{{productName}}"
-                                 class="img-fluid rounded shadow-sm"
-                                 style="max-width: 400px; max-height: 400px; object-fit: cover;">
-                        </div>
-                    {{/thumbnailUrl}}
+        <div class="sc-detail">
+            <div class="pd-media sc-detail-media">
+                <img src="{{thumbnailUrl}}" alt="{{productName}}">
+            </div>
 
-                    <div class="row mb-4">
-                        <div class="col-md-3">
-                            <div class="p-3 bg-light rounded text-center">
-                                <div class="text-muted small">판매자</div>
-                                <div class="h5 fw-bold">{{ownerName}}</div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="p-3 bg-light rounded text-center">
-                                <div class="text-muted small">카테고리</div>
-                                <div class="h5 fw-bold">{{categoryName}}</div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="p-3 bg-light rounded text-center">
-                                <div class="text-muted small">가격</div>
-                                <div class="h4 fw-bold text-primary">{{price}}원</div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="p-3 bg-light rounded text-center">
-                                <div class="text-muted small">재고</div>
-                                <div class="h4 fw-bold text-success">{{stockQuantity}}개</div>
-                            </div>
-                        </div>
-                    </div>
+            <div class="sc-detail-info">
+                <span class="sc-badge" data-status="{{status}}">{{statusLabel}}</span>
+                <h1 class="pd-name">{{productName}}</h1>
+                <p class="pd-price"><strong>{{priceText}}</strong>원</p>
 
-                    <h5 class="fw-bold mb-3 border-bottom pb-2">상세 설명</h5>
-                    <div class="product-detail-content mb-5">
-                        {{{description}}}
-                    </div>
+                <dl class="pd-facts">
+                    <div><dt>판매자</dt><dd>{{#ownerName}}{{ownerName}}{{/ownerName}}</dd></div>
+                    <div><dt>상품 코드</dt><dd>{{productCode}}</dd></div>
+                    <div><dt>카테고리</dt><dd>{{#categoryName}}{{categoryName}}{{/categoryName}}{{^categoryName}}없음{{/categoryName}}</dd></div>
+                    <div><dt>재고</dt><dd>{{stockQuantity}}개</dd></div>
+                    <div><dt>판매 수량</dt><dd>{{minusQuantity}}개</dd></div>
+                </dl>
 
-                    <div class="d-flex justify-content-between border-top pt-4">
-                        <a href="/admin/products" class="btn btn-outline-secondary">
-                            <i class="bi bi-arrow-left"></i> 목록으로
-                        </a>
-                    </div>
+                <div class="sc-detail-actions">
+                    <a href="/products/{{id}}" class="btn-line" target="_blank" rel="noopener">고객 화면 보기 <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></a>
                 </div>
             </div>
+        </div>
+
+        <section class="mp-panel sc-desc">
+            <h2 class="pd-section-title">상세 설명</h2>
+            <div class="product-description">{{{description}}}</div>
+        </section>
         {{/product}}
-    </div>
-</div>
+    </section>
+</main>
 
 {{> layout/footer }}

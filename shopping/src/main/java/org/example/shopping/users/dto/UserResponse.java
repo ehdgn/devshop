@@ -21,6 +21,9 @@ public class UserResponse {
         private String email;
         private String role;
         private LocalDateTime createdAt;
+        private String createdAtText;
+        private String roleLabel;
+        private boolean admin;
 
         public UserList(User user){
             this.id = user.getId();
@@ -28,6 +31,9 @@ public class UserResponse {
             this.nickname = user.getNickname();
             this.email = user.getEmail();
             this.role = user.getRoleDisplay();
+            this.admin = user.isAdmin();
+            this.roleLabel = user.isAdmin() ? "관리자" : (user.isOwner() ? "판매자" : "회원");
+            this.createdAtText = org.example.shopping._core.utils.MyDateUtil.toDateString(user.getCreatedAt());
             if(user.getCreatedAt() != null){
                 this.createdAt = user.getCreatedAt();
             }
