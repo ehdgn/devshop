@@ -1,0 +1,18 @@
+<header class="mp-head">
+    <p class="mp-hello"><b>관리자 센터</b></p>
+    <nav class="mp-tabs ad-tabs" aria-label="관리자 메뉴">
+        <a href="/admin/main" data-match="/admin/main">운영 현황</a>
+        <a href="/admin/list" data-match="/admin/list">회원</a>
+        <a href="/admin/owner/list" data-match="/admin/owner">입점사</a>
+        <a href="/admin/products" data-match="/admin/products">상품</a>
+        <a href="/admin/categories/list" data-match="/admin/categories">카테고리</a>
+        <a href="/admin/statistics" data-match="/admin/statistics">결제 내역</a>
+        <a href="/admin/chat/list" data-match="/admin/chat">1:1 상담</a>
+    </nav>
+</header>
+<script>
+    (() => {
+        const hit = [...document.querySelectorAll('.mp-tabs a')].find(a => location.pathname.startsWith(a.dataset.match));
+        if (hit) { hit.setAttribute('aria-current', 'page'); hit.scrollIntoView({block: 'nearest', inline: 'center'}); }
+    })();
+</script>

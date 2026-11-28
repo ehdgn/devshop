@@ -1,44 +1,47 @@
 {{> layout/header}}
 
-<div class="admin-owner-wrapper">
-    {{> layout/admin-sidebar}}
+<main class="site-container mp sc">
+    {{> layout/admin-nav}}
 
-    <div class="content-section">
-        <h2 class="mb-4">회원 관리</h2>
-        <div class="table-responsive">
-            <table class="data-table">
+    <section class="mp-body">
+        <h1 class="mp-title">회원</h1>
+
+        <div class="sc-table-wrap">
+            <table class="sc-table">
                 <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>아이디</th>
-                    <th>닉네임</th>
-                    <th>권한</th>
-                    <th>가입일</th>
-                    <th>관리</th>
+                    <th scope="col">닉네임</th>
+                    <th scope="col">아이디</th>
+                    <th scope="col">이메일</th>
+                    <th scope="col">권한</th>
+                    <th scope="col">가입일</th>
+                    <th scope="col"><span class="visually-hidden">관리</span></th>
                 </tr>
                 </thead>
                 <tbody>
                 {{#userList}}
-                    <tr>
-                        <td>{{id}}</td>
-                        <td>{{username}}</td>
-                        <td>{{nickname}}</td>
-                        <td><span class="badge bg-info">{{role}}</span></td>
-                        <td>{{createdAt}}</td>
-                        <td>
-                            <div class="d-flex gap-2">
-                                <form action="/admin/user/{{id}}/delete" method="post" onsubmit="return confirm('정말 삭제하시겠습니까?');">
-                                    <button class="btn btn-danger btn-sm">삭제</button>
-                                </form>
-                                <a href="/admin/users/{{id}}/edit" class="btn btn-warning btn-sm">수정</a>
-                            </div>
-                        </td>
-                    </tr>
+                <tr>
+                    <td><strong>{{nickname}}</strong></td>
+                    <td class="sc-muted">{{username}}</td>
+                    <td class="sc-muted">{{#email}}{{email}}{{/email}}</td>
+                    <td><span class="sc-badge ad-role" data-role="{{role}}">{{roleLabel}}</span></td>
+                    <td class="sc-muted">{{createdAtText}}</td>
+                    <td class="sc-row-actions">
+                        {{^admin}}
+                        <form action="/admin/user/{{id}}/delete" method="post" onsubmit="return confirm('이 회원을 삭제할까요? 되돌릴 수 없어요.');">
+                            <button type="submit" class="btn-line sc-delete ad-small">삭제</button>
+                        </form>
+                        {{/admin}}
+                    </td>
+                </tr>
+                {{/userList}}
+                {{^userList}}
+                <tr><td colspan="6" class="sc-none">회원이 없어요.</td></tr>
                 {{/userList}}
                 </tbody>
             </table>
         </div>
-    </div>
-</div>
+    </section>
+</main>
 
 {{> layout/footer}}

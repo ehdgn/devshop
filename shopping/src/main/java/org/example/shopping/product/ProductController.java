@@ -167,7 +167,7 @@ public class ProductController {
         validateAdmin(session);
         List<ProductResponse.AdminListDTO> products = productService.findAllForAdmin();
         model.addAttribute("products", products);
-        model.addAttribute("keyword", "");
+        model.addAttribute("hasProducts", !products.isEmpty());
         return "user/admin/product-list";
     }
 
@@ -181,11 +181,12 @@ public class ProductController {
         validateAdmin(session);
 
         if (keyword == null || keyword.trim().isEmpty()) {
-            return "redirect:user/admin/products";
+            return "redirect:/admin/products";
         }
 
         List<ProductResponse.AdminListDTO> products = productService.searchByProductName(keyword);
         model.addAttribute("products", products);
+        model.addAttribute("hasProducts", !products.isEmpty());
         model.addAttribute("keyword", keyword);
         return "user/admin/product-list";
     }

@@ -1,78 +1,54 @@
 {{> layout/header}}
 
-<div class="admin-owner-wrapper">
-    {{> layout/admin-sidebar}}
+<main class="site-container mp sc">
+    {{> layout/admin-nav}}
 
-    <div class="content-section">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>대시보드</h2>
+    <section class="mp-body">
+        <h1 class="mp-title">운영 현황</h1>
+
+        <div class="sc-stats ad-stats">
+            <a href="/admin/list" class="sc-stat"><span>전체 회원</span><strong>{{userCount}}</strong></a>
+            <a href="/admin/owner/list" class="sc-stat sc-stat-warn"><span>승인 대기 입점사</span><strong>{{waitOwnerCount}}</strong></a>
+            <a href="/admin/products" class="sc-stat"><span>전체 상품</span><strong>{{productCount}}</strong></a>
+            <a href="/admin/chat/list" class="sc-stat"><span>상담 방</span><strong>{{chatCount}}</strong></a>
         </div>
 
-        <div class="row g-3">
-            <div class="col-6 col-md-3">
-                <div class="stat-card bg-primary-dark">
-                    <h5>오늘 방문자</h5>
-                    <div class="value">1,250 명</div>
+        <div class="sc-grid">
+            <section class="mp-panel">
+                <header class="sc-panel-head">
+                    <h2>승인 대기 입점사</h2>
+                    <a href="/admin/owner/list">전체 보기 <i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+                </header>
+                {{#waitOwners}}
+                <div class="sc-mini">
+                    <span class="sc-mini-name">{{ownerName}}<small>상품 {{totalProduct}}개</small></span>
+                    <form action="/admin/owner/{{id}}/approve" method="post">
+                        <button type="submit" class="btn-buy ad-small">승인</button>
+                    </form>
                 </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="stat-card bg-success-dark">
-                    <h5>오늘 매출액</h5>
-                    <div class="value">₩ 3,450,000</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="stat-card bg-warning-dark">
-                    <h5>신규 가입</h5>
-                    <div class="value">12 명</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="stat-card bg-info-dark">
-                    <h5>문의 사항</h5>
-                    <div class="value">5 건</div>
-                </div>
-            </div>
-        </div>
+                {{/waitOwners}}
+                {{^waitOwners}}
+                <p class="sc-none">기다리는 입점 신청이 없어요.</p>
+                {{/waitOwners}}
+            </section>
 
-        <div class="mt-5">
-            <h4 class="mb-3">최근 가입 회원</h4>
-            <div class="table-responsive">
-                <table class="data-table">
-                    <thead>
-                    <tr>
-                        <th>번호</th>
-                        <th>아이디</th>
-                        <th>닉네임</th>
-                        <th>권한</th>
-                        <th>가입일</th>
-                        <th>상태</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {{#recentUsers}}
-                        <tr>
-                            <td>{{id}}</td>
-                            <td>{{username}}</td>
-                            <td>{{nickname}}</td>
-                            <td><span class="badge bg-secondary">{{role}}</span></td>
-                            <td>{{createdAt}}</td>
-                            <td><span class="text-success">정상</span></td>
-                        </tr>
-                    {{/recentUsers}}
-                    {{^recentUsers}}
-                        <tr>
-                            <td colspan="6" class="text-center">데이터가 없습니다.</td>
-                        </tr>
-                    {{/recentUsers}}
-                    </tbody>
-                </table>
-            </div>
-            <div class="text-end mt-2">
-                <a href="/admin/list" class="btn btn-link p-0 text-decoration-none">전체 회원 보기 ></a>
-            </div>
+            <section class="mp-panel">
+                <header class="sc-panel-head">
+                    <h2>최근 가입 회원</h2>
+                    <a href="/admin/list">전체 보기 <i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+                </header>
+                {{#recentUsers}}
+                <div class="sc-mini">
+                    <span class="sc-mini-name">{{nickname}}<small>{{username}} · {{createdAtText}}</small></span>
+                    <span class="sc-badge ad-role" data-role="{{role}}">{{roleLabel}}</span>
+                </div>
+                {{/recentUsers}}
+                {{^recentUsers}}
+                <p class="sc-none">아직 가입한 회원이 없어요.</p>
+                {{/recentUsers}}
+            </section>
         </div>
-    </div>
-</div>
+    </section>
+</main>
 
 {{> layout/footer}}

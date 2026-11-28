@@ -21,10 +21,10 @@
                 <thead>
                 <tr>
                     <th scope="col">상품</th>
-                    <th scope="col">카테고리</th>
+                    <th scope="col" class="sc-opt">카테고리</th>
                     <th scope="col" class="num">가격</th>
                     <th scope="col" class="num">재고</th>
-                    <th scope="col" class="num">판매</th>
+                    <th scope="col" class="num sc-opt">판매</th>
                     <th scope="col">상태</th>
                     <th scope="col"><span class="visually-hidden">관리</span></th>
                 </tr>
@@ -38,10 +38,10 @@
                             <span>{{productName}}</span>
                         </a>
                     </td>
-                    <td class="sc-muted">{{categoryName}}</td>
+                    <td class="sc-muted sc-opt">{{categoryName}}</td>
                     <td class="num">{{priceText}}원</td>
                     <td class="num">{{stockQuantity}}</td>
-                    <td class="num">{{minusQuantity}}</td>
+                    <td class="num sc-opt">{{minusQuantity}}</td>
                     <td><span class="sc-badge" data-status="{{status}}">{{statusLabel}}</span></td>
                     <td class="sc-row-actions"><a href="/owner/products/{{id}}/edit" class="btn-line">수정</a></td>
                 </tr>

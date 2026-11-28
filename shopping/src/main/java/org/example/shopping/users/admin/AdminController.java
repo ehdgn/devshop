@@ -3,7 +3,9 @@ package org.example.shopping.users.admin;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.example.shopping.chat.ChatService;
 import org.example.shopping.payment.log.HistoryResponse;
+import org.example.shopping.product.ProductService;
 import org.example.shopping.payment.log.HistoryService;
 import org.example.shopping.users.User;
 import org.example.shopping.users.dto.UserResponse;
@@ -26,14 +28,23 @@ public class AdminController {
     private final UserService userService;
     private final OwnerService ownerService;
     private final HistoryService historyService;
+    private final ProductService productService;
+    private final ChatService chatService;
 
     @GetMapping("/admin/main")
     public String dashboard(HttpSession session, Model model) {
         User sessionUser = (User) session.getAttribute("sessionUser");
         // 최근 10명 최신순 조회
         List<UserResponse.UserList> recentList = userService.topTenList();
+        List<OwnerResponse.OwnerList> owners = ownerService.ownerList();
         model.addAttribute("recentUsers", recentList);
         model.addAttribute("user", sessionUser);
+        // shortcut: 목록을 통째로 불러와 센다, 데이터가 많아지면 count 쿼리로 바꾸기
+        model.addAttribute("userCount", userService.userList().size());
+        model.addAttribute("waitOwnerCount", owners.stream().filter(OwnerResponse.OwnerList::isWAIT).count());
+        model.addAttribute("waitOwners", owners.stream().filter(OwnerResponse.OwnerList::isWAIT).toList());
+        model.addAttribute("productCount", productService.findAllForAdmin().size());
+        model.addAttribute("chatCount", chatService.findAll().size());
         return "user/admin/main";
     }
 

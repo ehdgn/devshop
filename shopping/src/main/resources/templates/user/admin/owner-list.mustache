@@ -1,50 +1,48 @@
 {{> layout/header}}
 
-<div class="admin-owner-wrapper">
-    {{> layout/admin-sidebar}}
+<main class="site-container mp sc">
+    {{> layout/admin-nav}}
 
-    <div class="content-section">
-        <h2 class="mb-4">입점사 현황</h2>
-        <div class="table-responsive">
-            <table class="data-table">
+    <section class="mp-body">
+        <h1 class="mp-title">입점사</h1>
+
+        <div class="sc-table-wrap">
+            <table class="sc-table">
                 <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>입점사 명</th>
-                    <th>보유 상품 수</th>
-                    <th>상태</th>
-                    <th>관리</th>
+                    <th scope="col">입점사</th>
+                    <th scope="col" class="num">보유 상품</th>
+                    <th scope="col">상태</th>
+                    <th scope="col"><span class="visually-hidden">관리</span></th>
                 </tr>
                 </thead>
                 <tbody>
                 {{#ownerList}}
-                    <tr>
-                        <td>{{id}}</td>
-                        <td>{{ownerName}}</td>
-                        <td>
-                            <button class="btn btn-outline-dark btn-sm">상세보기</button>
-                        </td>
-                        <td><span class="badge bg-success">{{ownerStatus}}</span></td>
-                        <td>
-
-                            {{#isAPPROVED}}
-                                <form action="/admin/owner/{{id}}/suspension" method="post">
-                                    <button class="btn btn-danger">정지</button>
-                                </form>
-                            {{/isAPPROVED}}
-                            {{^isAPPROVED}}
-                                <form action="/admin/owner/{{id}}/approve" method="post">
-                                    <button class="btn btn-danger">승인</button>
-                                </form>
-                            {{/isAPPROVED}}
-
-                        </td>
-                    </tr>
+                <tr>
+                    <td><strong>{{ownerName}}</strong></td>
+                    <td class="num">{{totalProduct}}개</td>
+                    <td><span class="sc-badge ad-owner" data-status="{{ownerStatus}}">{{statusLabel}}</span></td>
+                    <td class="sc-row-actions">
+                        {{#isAPPROVED}}
+                        <form action="/admin/owner/{{id}}/suspension" method="post" onsubmit="return confirm('이 입점사를 정지할까요?');">
+                            <button type="submit" class="btn-line sc-delete ad-small">정지</button>
+                        </form>
+                        {{/isAPPROVED}}
+                        {{^isAPPROVED}}
+                        <form action="/admin/owner/{{id}}/approve" method="post">
+                            <button type="submit" class="btn-buy ad-small">{{#isWAIT}}승인{{/isWAIT}}{{^isWAIT}}정지 풀기{{/isWAIT}}</button>
+                        </form>
+                        {{/isAPPROVED}}
+                    </td>
+                </tr>
+                {{/ownerList}}
+                {{^ownerList}}
+                <tr><td colspan="4" class="sc-none">입점사가 없어요.</td></tr>
                 {{/ownerList}}
                 </tbody>
             </table>
         </div>
-    </div>
-</div>
+    </section>
+</main>
 
 {{> layout/footer}}

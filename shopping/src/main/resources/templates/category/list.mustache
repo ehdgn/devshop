@@ -1,234 +1,51 @@
 {{> layout/header }}
 
+<main class="site-container mp sc">
+    {{> layout/admin-nav}}
 
-<main class="admin-owner-wrapper">
-    {{> layout/admin-sidebar}}
-
-    <div class="content-section">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>카테고리 전체 목록</h2>
-            <a href="/admin/categories/save" class="btn btn-dark">카테고리 등록하러 가기</a>
+    <section class="mp-body">
+        <div class="sc-titlebar">
+            <h1 class="mp-title">카테고리</h1>
+            <a href="/admin/categories/save" class="btn-buy sc-add"><i class="bi bi-plus-lg" aria-hidden="true"></i>카테고리 등록</a>
         </div>
 
-        <table class="data-table">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>분류</th>
-                <th>카테고리 명</th>
-                <th>상위 카테고리</th>
-                <th>노출 순서</th>
-                <th>관리</th>
-            </tr>
-            </thead>
-            <tbody>
-            {{#categories}}
+        <div class="sc-table-wrap">
+            <table class="sc-table">
+                <thead>
                 <tr>
-                    <td>{{id}}</td>
+                    <th scope="col">카테고리</th>
+                    <th scope="col">분류</th>
+                    <th scope="col">상위 카테고리</th>
+                    <th scope="col" class="num">노출 순서</th>
+                    <th scope="col"><span class="visually-hidden">관리</span></th>
+                </tr>
+                </thead>
+                <tbody>
+                {{#categoryList}}
+                <tr>
                     <td>
-                        <span class="badge
-                            {{#parentName}}bg-info-dark{{/parentName}}
-                            {{^parentName}}bg-primary-dark{{/parentName}}">
-                            {{#parentName}}소분류{{/parentName}}
-                            {{^parentName}}대분류{{/parentName}}
-                        </span>
+                        <span class="sc-product"><img src="{{imageUrl}}" alt=""><span>{{categoryName}}</span></span>
                     </td>
-                    <td class="fw-bold">{{categoryName}}</td>
-                    <td>
-                        {{#parentName}}{{parentName}}{{/parentName}}
-                        {{^parentName}}-{{/parentName}}
-                    </td>
-                    <td>
-                        {{#displayOrder}}{{displayOrder}}{{/displayOrder}}
-                        {{^displayOrder}}없음{{/displayOrder}}
-                    </td>
-                    <td>
-                        <div class="d-flex gap-2">
-                            <a href="/admin/categories/{{id}}/edit" class="btn-sm btn-edit text-decoration-none">수정</a>
-                            <form action="/admin/categories/{{id}}/delete" method="post"
-                                  onsubmit="return confirm('정말 삭제하시겠습니까?')">
-                                <button type="submit" class="btn-sm btn-delete" style="border:none;">삭제</button>
+                    <td><span class="sc-badge" data-status="{{#parentName}}INACTIVE{{/parentName}}{{^parentName}}ACTIVE{{/parentName}}">{{#parentName}}소분류{{/parentName}}{{^parentName}}대분류{{/parentName}}</span></td>
+                    <td class="sc-muted">{{#parentName}}{{parentName}}{{/parentName}}{{^parentName}}-{{/parentName}}</td>
+                    <td class="num">{{displayOrder}}</td>
+                    <td class="sc-row-actions">
+                        <div class="ad-actions">
+                            <a href="/admin/categories/{{id}}/edit" class="btn-line">수정</a>
+                            <form action="/admin/categories/{{id}}/delete" method="post" onsubmit="return confirm('이 카테고리를 삭제할까요? 되돌릴 수 없어요.')">
+                                <button type="submit" class="btn-line sc-delete ad-small">삭제</button>
                             </form>
                         </div>
                     </td>
                 </tr>
-            {{/categories}}
-            {{#children}}
-                <tr>
-                    <td>{{id}}</td>
-                    <td>
-                        <span class="badge
-                            {{#parentName}}bg-info-dark{{/parentName}}
-                            {{^parentName}}bg-primary-dark{{/parentName}}">
-                            {{#parentName}}소분류{{/parentName}}
-                            {{^parentName}}대분류{{/parentName}}
-                        </span>
-                    </td>
-                    <td class="fw-bold">{{categoryName}}</td>
-                    <td>
-                        {{#parentName}}{{parentName}}{{/parentName}}
-                        {{^parentName}}-{{/parentName}}
-                    </td>
-                    <td>
-                        {{#displayOrder}}{{displayOrder}}{{/displayOrder}}
-                        {{^displayOrder}}없음{{/displayOrder}}
-                    </td>
-                    <td>
-                        <div class="d-flex gap-2">
-                            <a href="/admin/categories/{{id}}/edit" class="btn-sm btn-edit text-decoration-none">수정</a>
-                            <form action="/admin/categories/{{id}}/delete" method="post"
-                                  onsubmit="return confirm('정말 삭제하시겠습니까?')">
-                                <button type="submit" class="btn-sm btn-delete" style="border:none;">삭제</button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-            {{/children}}
-
-
-            {{^categories}}
-                <tr>
-                    <td colspan="6" class="text-center py-5 text-muted">등록된 카테고리가 없습니다.</td>
-                </tr>
-            {{/categories}}
-            </tbody>
-        </table>
-    </div>
+                {{/categoryList}}
+                {{^categoryList}}
+                <tr><td colspan="5" class="sc-none">등록된 카테고리가 없어요.</td></tr>
+                {{/categoryList}}
+                </tbody>
+            </table>
+        </div>
+    </section>
 </main>
 
-<style>
-
-    .content-section {
-        padding: 30px;
-        max-width: 1400px;
-        margin: 0 auto;
-    }
-
-
-    .content-section h2 {
-        font-size: 28px;
-        font-weight: 700;
-        color: #111827;
-        margin: 0;
-    }
-
-    .content-section .btn {
-        padding: 10px 16px;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 600;
-    }
-
-
-    .data-table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0;
-        background: #ffffff;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.05);
-    }
-
-    .data-table thead {
-        background: #f9fafb;
-    }
-
-    .data-table thead th {
-        padding: 14px 16px;
-        font-size: 13px;
-        font-weight: 700;
-        color: #374151;
-        text-align: left;
-        border-bottom: 1px solid #e5e7eb;
-    }
-
-    .data-table tbody td {
-        padding: 14px 16px;
-        font-size: 14px;
-        color: #1f2937;
-        border-bottom: 1px solid #f1f3f5;
-        vertical-align: middle;
-    }
-
-    .data-table tbody tr:hover {
-        background: #f9fafb;
-    }
-
-    .data-table tbody tr:last-child td {
-        border-bottom: none;
-    }
-
-
-    .badge {
-        display: inline-block;
-        padding: 6px 10px;
-        font-size: 12px;
-        font-weight: 700;
-        border-radius: 9999px;
-    }
-
-    .bg-primary-dark {
-        background: #2563eb;
-        color: #ffffff;
-    }
-
-    .bg-info-dark {
-        background: #0ea5e9;
-        color: #ffffff;
-    }
-
-
-    .btn-sm {
-        padding: 6px 12px;
-        font-size: 13px;
-        font-weight: 600;
-        border-radius: 6px;
-        cursor: pointer;
-        line-height: 1;
-    }
-
-
-    .btn-edit {
-        background: #e0f2fe;
-        color: #0369a1;
-    }
-
-    .btn-edit:hover {
-        background: #bae6fd;
-        color: #075985;
-    }
-
-
-    .btn-delete {
-        background: #fee2e2;
-        color: #b91c1c;
-    }
-
-    .btn-delete:hover {
-        background: #fecaca;
-        color: #991b1b;
-    }
-
-
-    .d-flex.gap-2 {
-        gap: 8px;
-    }
-
-
-    .text-muted {
-        color: #9ca3af;
-    }
-
-    .text-center {
-        text-align: center;
-    }
-
-    .py-5 {
-        padding-top: 40px;
-        padding-bottom: 40px;
-    }
-
-</style>
-
-{{> layout/footer}}
+{{> layout/footer }}

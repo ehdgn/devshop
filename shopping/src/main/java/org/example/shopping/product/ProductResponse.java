@@ -212,13 +212,21 @@ public class ProductResponse {
         private int price;
         private int stockQuantity;
         private String status;
+        private String priceText;
+        private String statusLabel;
+        private String thumbnailUrl;
+        private int minusQuantity;
 
         public AdminListDTO(Product product) {
             this.id = product.getId();
             this.productName = product.getProductName();
             this.price = product.getPrice().intValue();
+            this.priceText = MoneyUtils.format(product.getPrice());
             this.status = product.getStatus().name();
+            this.statusLabel = statusLabel(product.getStatus());
+            this.thumbnailUrl = getImagePath(product.getThumbnailUrl());
             this.stockQuantity = product.getStockQuantity();
+            this.minusQuantity = product.getMinusQuantity();
 
             if (product.getOwner() != null) {
                 this.ownerName = product.getOwner().getName();
@@ -244,12 +252,16 @@ public class ProductResponse {
         private String categoryName;
         private String status;
         private String createdAt;
+        private String priceText;
+        private String statusLabel;
 
         public AdminDetailDTO(Product product) {
             this.id = product.getId();
             this.productName = product.getProductName();
             this.productCode = product.getProductCode();
             this.price = product.getPrice().intValue();
+            this.priceText = MoneyUtils.format(product.getPrice());
+            this.statusLabel = statusLabel(product.getStatus());
             this.stockQuantity = product.getStockQuantity();
             this.minusQuantity = product.getMinusQuantity();
             this.description = product.getDescription();
